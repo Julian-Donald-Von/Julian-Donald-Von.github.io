@@ -115,7 +115,8 @@
 <div class="paper-fiber paper-fiber-a" aria-hidden="true"></div>
 <div class="paper-fiber paper-fiber-b" aria-hidden="true"></div>
 
-<div id="gate" role="dialog" aria-label="Entrance">
+<div id="stfu-count" class="stfu-counter" title="Repeated clicks from the same IP count once. IP addresses do not identify individual people.">STFU consensus: unavailable</div>
+<div id="gate" role="dialog" aria-label="Entrance" aria-modal="true" aria-describedby="gate-sr">
   <p id="gate-line" aria-hidden="true"></p>
   <p id="gate-sr" class="sr-only"></p>
   <div class="gate-actions">
@@ -124,6 +125,8 @@
   </div>
 </div>
 <noscript><style>#gate{display:none}</style></noscript>
+<script src="assets/js/stfu-config.js"></script>
+<script src="assets/js/stfu-counter.js"></script>
 <script>
   /* ---- 嘴欠门卫：随机开场白 + okay/STFU（同功能）+ 上滑退场 ---- */
   (function () {
@@ -152,6 +155,7 @@ var lC = [`Congratulations. Your display has achieved texture.`,`What you are se
     ];
     var KEY = "gate.recent.v1", recent = [];
     try { recent = JSON.parse(localStorage.getItem(KEY) || "[]"); } catch (e) { recent = []; }
+    if (!Array.isArray(recent)) recent = [];
     function pickGroup(groups) {
       var total = 0, i;
       for (i = 0; i < groups.length; i++) total += groups[i].w;
@@ -160,16 +164,17 @@ var lC = [`Congratulations. Your display has achieved texture.`,`What you are se
       return groups[0];
     }
     /* 类内依次排序：每组打乱后依次取，取完一轮再重洗（跨刷新持久化） */
-    var BAGKEY = "gate.bag.v3";
+    var BAGKEY = "gate.bag.v4";
     var bags = {};
     function loadBags() {
       try { bags = JSON.parse(localStorage.getItem(BAGKEY) || "{}") || {}; } catch (e) { bags = {}; }
+      if (!bags || typeof bags !== "object" || Array.isArray(bags)) bags = {};
       return bags;
     }
     function takeFromGroup(gid, lines) {
       loadBags();
       var b = bags[gid];
-      if (!b || !b.length) {
+      if (!Array.isArray(b) || !b.length || b.some(function (v) { return lines.indexOf(v) < 0; })) {
         b = lines.slice();
         for (var i = b.length - 1; i > 0; i--) {
           var j = Math.floor(Math.random() * (i + 1)), tmp = b[i];
@@ -187,7 +192,7 @@ var lC = [`Congratulations. Your display has achieved texture.`,`What you are se
       var line = "";
       for (var t = 0; t < 40; t++) {
         var g = pickGroup(groups);                        /* 大类：按权重 */
-        line = takeFromGroup((light ? "L" : "G") + groups.indexOf(g), g.lines);  /* 类内：依次 */
+        line = takeFromGroup((groups === LIGHTMODE ? "L" : "G") + groups.indexOf(g), g.lines);  /* 类内：依次 */
         if (recent.indexOf(line) === -1) break;
       }
       recent.push(line);
@@ -202,83 +207,6 @@ var lC = [`Congratulations. Your display has achieved texture.`,`What you are se
     function later(fn, ms) { var t = window.setTimeout(function () { if (!aborted) fn(); }, ms); timers.push(t); return t; }
     function clearAll() { for (var i = 0; i < timers.length; i++) window.clearTimeout(timers[i]); timers.length = 0; }
     function ss(k, v) { try { if (v === undefined) return sessionStorage.getItem(k); sessionStorage.setItem(k, v); } catch (e) { return null; } }
-
-    /* 主动换行：语义块切分；每行宽度 <= 视口 2/3；最多三行（第三行兜底） */
-    function textWidth(text) {
-      var cs = window.getComputedStyle(lineEl);
-      var cv = document.createElement("canvas");
-      var ctx = cv.getContext && cv.getContext("2d");
-      if (!ctx) return 0;
-      ctx.font = cs.fontStyle + " " + cs.fontWeight + " " + cs.fontSize + " " + cs.fontFamily;
-      return ctx.measureText(text).width;
-    }
-    function planLines(text) {
-      var maxW = Math.max(320, window.innerWidth * 2 / 3);
-      var maxLines = 3;
-      var ready = !(document.fonts && document.fonts.status && document.fonts.status !== "loaded");
-      var fit = function (s) {
-        var w = ready ? textWidth(s) : 0;
-        if (!w) {
-          var fs = parseFloat(window.getComputedStyle(lineEl).fontSize) || 40;
-          return s.length <= Math.max(24, Math.floor(maxW / (fs * 0.52)));
-        }
-        return w <= maxW;
-      };
-      if (fit(text)) return text;
-      /* 分句：句号 / 逗号 / 分号 / 冒号 / 破折号 处切一片 */
-      /* 只在“装不下”时才换行；断点优先落在句号/逗号，其次空格，绝不把短句从中间切开 */
-      var pieces = [], buf = "";
-      for (var p = 0; p < text.length; p++) {
-        buf += text.charAt(p);
-        if (".、，,;:—–".indexOf(text.charAt(p)) > -1) {
-          var q = p + 1;
-          while (q < text.length && /[”’"')]/.test(text.charAt(q))) { buf += text.charAt(q); q++; }
-          p = q - 1;
-          pieces.push(buf.trim()); buf = "";
-        }
-      }
-      if (buf.trim()) pieces.push(buf.trim());
-
-      var lines = [], cur = "";
-      function addPiece(piece) {
-        if (!cur) {
-          if (!fit(piece) && piece.indexOf(" ") > 0) { addWords(piece); return; }
-          cur = piece; return;
-        }
-        var trial = cur + " " + piece;
-        if (fit(trial)) { cur = trial; return; }
-        lines.push(cur); cur = "";
-        if (!fit(piece) && piece.indexOf(" ") > 0) { addWords(piece); return; }
-        cur = piece;
-      }
-      function addWords(piece) {
-        var words = piece.split(" ");
-        for (var w = 0; w < words.length; w++) {
-          if (lines.length === maxLines - 1) {                 /* 末行兜底收下剩余 */
-            cur = (cur ? cur + " " : "") + words.slice(w).join(" ");
-            return;
-          }
-          var wt = cur ? cur + " " + words[w] : words[w];
-          if (!cur || fit(wt)) cur = wt;
-          else { lines.push(cur); cur = words[w]; }
-        }
-      }
-      for (var k = 0; k < pieces.length; k++) {
-        if (lines.length === maxLines - 1) {                   /* 末行兜底收下剩余 */
-          cur = (cur ? cur + " " : "") + pieces.slice(k).join(" ");
-          break;
-        }
-        addPiece(pieces[k]);
-      }
-      if (cur) lines.push(cur);
-      var clean = [];
-      for (var cl = 0; cl < lines.length; cl++) { if (lines[cl].trim()) clean.push(lines[cl].trim()); }
-      lines = clean;
-      while (lines.length > maxLines) {
-        lines[maxLines - 1] = lines[maxLines - 1] + " " + lines.splice(maxLines, 1)[0];
-      }
-      return lines.join("\n");
-    }
 
     /* 键盘相邻键 */
     var KB = ["qwertyuiop", "asdfghjkl", "zxcvbnm"];
@@ -314,24 +242,15 @@ var lC = [`Congratulations. Your display has achieved texture.`,`What you are se
     /* 错误必须生成在“光标所在处”：err 与 correct 都以当前位置为基准，
        否则错误串会被追加到错位的地方，看起来像乱码而不是真人手滑 */
     function makeTypo(text, i) {
-      var m = /[A-Za-z]+/.exec(text.slice(i));
-      if (!m || m[0].length < 5) return null;
-      var a = text.charAt(i), b = text.charAt(i + 1), c = text.charAt(i + 2);
-      var two = Math.random() < 0.45 && /[A-Za-z]/.test(b);      /* 单字符 / 双字符两种都要有 */
-      var err;
-      if (!two) {
-        err = Math.random() < 0.6 ? adjacent(a) : b;             /* 相邻键误触 / 漏打当前字 */
-        if (err === a || !err) err = adjacent(a);
-        if (err === a) return null;
-        return { at: i, err: err, len: 1, correct: a };
-      }
-      var kind = Math.random();
-      if (kind < 0.4) err = b + a;                              /* 相邻字符颠倒：reseaerch */
-      else if (kind < 0.7) err = a + a;                         /* 重复字符：looading */
-      else err = adjacent(a) + b;                               /* 相邻键 + 下一字 */
-      var correct = a + b;
-      if (err === correct) err = b + a;
-      return { at: i, err: err, len: 2, correct: correct };
+      var word = /^[A-Za-z]{5,}/.exec(text.slice(i));
+      if (!word) return null;
+      var w = word[0], p = 1 + Math.floor(Math.random() * (w.length - 2));
+      var a = w.charAt(p), b = w.charAt(p + 1), kind = Math.random(), err;
+      if (kind < 0.4 && a !== b) err = w.slice(0, p) + b + a + w.slice(p + 2);
+      else if (kind < 0.7) err = w.slice(0, p) + a + w.slice(p);
+      else if (kind < 0.85) err = w.slice(0, p) + w.slice(p + 1);
+      else err = w.slice(0, p) + adjacent(a) + w.slice(p + 1);
+      return { at: i, err: err, len: w.length, correct: w };
     }
     /* 破防后的自言自语：整池随机抽一句（…damn / …shit 只是其中两个，不是必然） */
     var BURST = ["…damn", "…shit", "nope.", "again?", "close enough—", "I can type.",
@@ -354,22 +273,18 @@ var lC = [`Congratulations. Your display has achieved texture.`,`What you are se
 
     function rollMood() {
       var r = Math.random();
-      var damnUsed = ss("gate.damn") === "1";
-      var swearUsed = ss("gate.swear") === "1";
-      /* 非破防情况至多错一次；只有破防档才会连错（damn / shit 的因果链） */
-      if (r < 0.70) return { typos: 0, frust: null };                            /* 70% 完全正常 */
-      if (r < 0.97) return { typos: 1, frust: null };                            /* 27% 只错一次 */
-      if (r < 0.99) {                                                            /*  2% 破防 */
-        return { typos: 2 + (Math.random() < 0.5 ? 1 : 0), frust: "burst" };
-      }
-      /* 最低概率档：摆烂（删掉后整句瞬显），另有更隐蔽的 Whatever. 变体 */
-      var last = Math.random();
-      return { typos: 3, frust: (last < 0.18 && !swearUsed) ? "whatever" : "giveup" };
+      if (r < 0.70) return { typos: 0, frust: null };
+      if (r < 0.90) return { typos: 1, frust: null };
+      if (r < 0.97) return { typos: 2 + (Math.random() < 0.5 ? 1 : 0), frust: null };
+      if (r < 0.99) return { typos: 2, frust: ss("gate.damn") !== "1" ? "damn" : "burst" };
+      if (r < 0.998) return { typos: 3, frust: ss("gate.swear") !== "1" ? "giveup" : "burst" };
+      if (r < 0.999) return { typos: 2, frust: "whatever" };
+      return { typos: 2, frust: "burst" };
     }
 
     /* 节奏：普通 35-65ms；空格后偶停；逗号 80-140；句号 120-220；破折号 120-250 */
     function pace(ch, prev, fast) {
-      var base = fast ? 16 + Math.random() * 10 : 26 + Math.random() * 14;   /* 26–40ms */
+      var base = fast ? 16 + Math.random() * 10 : 35 + Math.random() * 30;   /* 35–65ms; no total duration cap */
       if (ch === ",") return base + 40 + Math.random() * 30;                 /* 逗号稍顿 */
       if (ch === ".") return base + 60 + Math.random() * 50;
       if (ch === "—" || ch === "–") return base + 60 + Math.random() * 60;
@@ -380,7 +295,7 @@ var lC = [`Congratulations. Your display has achieved texture.`,`What you are se
     }
 
     function typeLine(line) {
-      if (!lineEl) return;
+      if (!lineEl || aborted) return;
       var sr = document.getElementById("gate-sr");
       if (sr) sr.textContent = line;
       var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -393,22 +308,20 @@ var lC = [`Congratulations. Your display has achieved texture.`,`What you are se
     }
 
     function typeNow(line, reduce) {
-      if (!lineEl) return;
-      var target = planLines(line);
-      var restarted = false;    /* 不再设时长上限：打字自然进行到结束；按钮仍三秒出现 */
-      var btns = window.setTimeout(function () { if (!aborted) showButtons(true); }, 3000);
-      timers.push(btns);
+      if (!lineEl || aborted) return;
+      reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      var target = line;
+      var restarted = false;
+      showButtons(true);
       if (reduce) { lineEl.textContent = target; showButtons(true); return; }
 
       var i = 0, usedTypos = 0, slowUntil = -1, frustDone = false;
       var mood = rollMood();
       var spots = [], used = [];
-      for (var t = 0; t < mood.typos; t++) {
+      if (mood.typos) {
         var s = pickTypoSpot(target, used);
-        if (s < 0) break;
-        used.push(s); spots.push(s);
+        if (s >= 0) spots.push(s);
       }
-      spots.sort(function (a, b) { return a - b; });
       var spotIdx = 0;
       lineEl.textContent = "";
       lineEl.classList.add("typing");
@@ -440,8 +353,10 @@ var lC = [`Congratulations. Your display has achieved texture.`,`What you are se
       function frust(then) {
         frustDone = true;
         var kind = mood.frust;
-        var phrase = (kind === "whatever") ? "Whatever." : pickBurst();
-        swearing = (phrase === "…damn" || phrase === "…shit");
+        var phrase = kind === "damn" ? "...damn" : kind === "giveup" ? "...shit" : pickBurst();
+        if (kind === "damn") ss("gate.damn", "1");
+        if (kind === "giveup") ss("gate.swear", "1");
+        swearing = /^(?:…|\.\.\.)(?:damn|shit)$/.test(phrase);
         put(phrase, function () {
           later(function () {
             erase(phrase.length, function () {
@@ -488,6 +403,7 @@ var lC = [`Congratulations. Your display has achieved texture.`,`What you are se
               lineEl.classList.remove("caret-flash");
               erase(tp.err.length + tail.length, function () {    /* 只删到出错处，前面的字不动 */
                 later(function () {
+                  if (usedTypos < mood.typos) { runTypo(spot, then); return; }
                   slowUntil = tp.at + tp.len + tail.length + 8;
                   put(tp.correct + tail, function () {
                     i = tp.at + tp.len + tail.length;
@@ -526,6 +442,9 @@ var lC = [`Congratulations. Your display has achieved texture.`,`What you are se
       var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       gate.classList.add("gate--open");
       document.documentElement.classList.remove("gate-locked");
+      unlockBackground();
+      var destination = document.querySelector("main a, header a, nav a");
+      if (destination) destination.focus({ preventScroll: true });
       window.setTimeout(function () { if (gate.parentNode) gate.parentNode.removeChild(gate); }, reduce ? 60 : 900);
     }
     /* 按 STFU 被点时的“心情”分层抽一句回应；组内依次取，避免翻来覆去同一句 */
@@ -555,6 +474,7 @@ var lC = [`Congratulations. Your display has achieved texture.`,`What you are se
     function pickExit(forceTier) {
       var st = {};
       try { st = JSON.parse(localStorage.getItem(EXITCUR) || "{}") || {}; } catch (e) { st = {}; }
+      if (!st || typeof st !== "object" || Array.isArray(st)) st = {};
       var total = 0, i;
       for (i = 0; i < EXIT_TIERS.length; i++) total += EXIT_TIERS[i].w;
       var gi = forceTier;
@@ -564,7 +484,7 @@ var lC = [`Congratulations. Your display has achieved texture.`,`What you are se
         for (i = 0; i < EXIT_TIERS.length; i++) { r -= EXIT_TIERS[i].w; if (r <= 0) { gi = i; break; } }
       }
       var bag = st["g" + gi];
-      if (!bag || !bag.length) {
+      if (!Array.isArray(bag) || !bag.length || bag.some(function (v) { return !Number.isInteger(v) || v < 0 || v >= EXIT_TIERS[gi].lines.length; })) {
         bag = EXIT_TIERS[gi].lines.map(function (_, k) { return k; });
         for (var a = bag.length - 1; a > 0; a--) {
           var b = Math.floor(Math.random() * (a + 1)), tmp = bag[a];
@@ -577,10 +497,15 @@ var lC = [`Congratulations. Your display has achieved texture.`,`What you are se
       return EXIT_TIERS[gi].lines[idx];
     }
     function dismiss(fromStfu) {
+      if (aborted) return;
+      var wasSwearing = swearing;
+      lineEl.classList.remove("typing", "caret-flash");
       aborted = true;
       clearAll();
       if (fromStfu) {
-        if (swearing) { window.setTimeout(slideAway, 100); return; }   /* 正在骂：不回嘴，直接走 */
+        if (window.recordStfu) window.recordStfu();
+        if (wasSwearing) { window.setTimeout(slideAway, 100); return; }   /* 正在骂：不回嘴，直接走 */
+        if (Math.random() < 0.20) { slideAway(); return; }
         if (lineEl) lineEl.textContent = pickExit();
         window.setTimeout(slideAway, 150);
         return;
@@ -596,6 +521,35 @@ var lC = [`Congratulations. Your display has achieved texture.`,`What you are se
     if (ok) ok.addEventListener("click", function () { dismiss(false); });
     if (stfu) stfu.addEventListener("click", function () { dismiss(true); });
     document.documentElement.classList.add("gate-locked");
+    var locked = [];
+    function lockBackground() {
+      if (aborted) return;
+      Array.prototype.forEach.call(document.body.children, function (el) {
+        if (el !== gate && !/^(SCRIPT|STYLE|LINK)$/.test(el.tagName)) {
+          locked.push([el, el.inert]); el.inert = true;
+        }
+      });
+      if (ok) ok.focus({ preventScroll: true });
+    }
+    function unlockBackground() { locked.forEach(function (v) { v[0].inert = v[1]; }); locked = []; }
+    gate.addEventListener("keydown", function (e) {
+      if (e.key === "Escape") { e.preventDefault(); dismiss(false); }
+      if (e.key === "Tab") {
+        e.preventDefault();
+        if (document.activeElement === ok) stfu.focus(); else ok.focus();
+      }
+    });
+    if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", lockBackground, { once: true });
+    else lockBackground();
+    var motion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)");
+    if (motion && motion.addEventListener) motion.addEventListener("change", function (e) {
+      if (e.matches && !aborted) {
+        clearAll(); swearing = false;
+        lineEl.classList.remove("typing", "caret-flash");
+        lineEl.textContent = document.getElementById("gate-sr").textContent;
+        showButtons(true);
+      }
+    });
 
     /* ---- 纸面跟随鼠标：位移视差（不改光照 ⇒ 纸色恒定） ---- */
     (function () {
@@ -1204,3 +1158,4 @@ var lC = [`Congratulations. Your display has achieved texture.`,`What you are se
         </script>
 </body>
 </html>
+

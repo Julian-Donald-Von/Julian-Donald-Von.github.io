@@ -1,0 +1,3 @@
+CREATE TABLE IF NOT EXISTS stfu_clicks (
+  ip_hash TEXT PRIMARY KEY
+);
