@@ -22,7 +22,7 @@
 <meta name="twitter:image" content="https://julian-donald-von.github.io/assets/img/og.png">
 
 <link rel="stylesheet" href="assets/fonts/latin.css">
-<link rel="stylesheet" href="assets/css/editorial.css?v20260930u">
+<link rel="stylesheet" href="assets/css/editorial.css?v20260930v">
 <noscript><style>.reveal{opacity:1;transform:none}</style></noscript>
 </head>
 <body>
@@ -226,11 +226,11 @@ var lC = [`Congratulations. Your display has achieved texture.`,`What you are se
       };
       if (fit(text)) return text;
       /* 分句：句号 / 逗号 / 分号 / 冒号 / 破折号 处切一片 */
+      /* 只在“装不下”时才换行；断点优先落在句号/逗号，其次空格，绝不把短句从中间切开 */
       var pieces = [], buf = "";
       for (var p = 0; p < text.length; p++) {
         buf += text.charAt(p);
         if (".、，,;:—–".indexOf(text.charAt(p)) > -1) {
-          /* 句号/逗号后的闭合引号要跟着走，否则 ” 会单独成片并被换到新的一行 */
           var q = p + 1;
           while (q < text.length && /[”’"')]/.test(text.charAt(q))) { buf += text.charAt(q); q++; }
           p = q - 1;
@@ -238,35 +238,37 @@ var lC = [`Congratulations. Your display has achieved texture.`,`What you are se
         }
       }
       if (buf.trim()) pieces.push(buf.trim());
+
       var lines = [], cur = "";
+      function addPiece(piece) {
+        if (!cur) {
+          if (!fit(piece) && piece.indexOf(" ") > 0) { addWords(piece); return; }
+          cur = piece; return;
+        }
+        var trial = cur + " " + piece;
+        if (fit(trial)) { cur = trial; return; }
+        lines.push(cur); cur = "";
+        if (!fit(piece) && piece.indexOf(" ") > 0) { addWords(piece); return; }
+        cur = piece;
+      }
+      function addWords(piece) {
+        var words = piece.split(" ");
+        for (var w = 0; w < words.length; w++) {
+          if (lines.length === maxLines - 1) {                 /* 末行兜底收下剩余 */
+            cur = (cur ? cur + " " : "") + words.slice(w).join(" ");
+            return;
+          }
+          var wt = cur ? cur + " " + words[w] : words[w];
+          if (!cur || fit(wt)) cur = wt;
+          else { lines.push(cur); cur = words[w]; }
+        }
+      }
       for (var k = 0; k < pieces.length; k++) {
-        var piece = pieces[k];
-        if (lines.length === maxLines - 1) {                 /* 第三行兜底收下剩余 */
-          cur = cur ? cur + " " + pieces.slice(k).join(" ") : pieces.slice(k).join(" ");
+        if (lines.length === maxLines - 1) {                   /* 末行兜底收下剩余 */
+          cur = (cur ? cur + " " : "") + pieces.slice(k).join(" ");
           break;
         }
-        if (!cur && !fit(piece) && piece.indexOf(" ") > 0) {
-          /* 整片就超宽：按空格逐词塞，装不下立刻换行 */
-          var words = piece.split(" ");
-          for (var wi = 0; wi < words.length; wi++) {
-            var wt = cur ? cur + " " + words[wi] : words[wi];
-            if (!cur || fit(wt)) cur = wt;
-            else { lines.push(cur); cur = words[wi]; }
-            if (lines.length === maxLines - 1 && wi < words.length - 1) {
-              cur += " " + words.slice(wi + 1).join(" ");
-              break;
-            }
-          }
-        } else {
-          var trial = cur ? cur + " " + piece : piece;
-          if (!cur) cur = piece;
-          else if (fit(trial)) cur = trial;                  /* 装得下就继续 */
-          else { lines.push(cur); cur = piece; }             /* 装不下果断换行 */
-        }
-        var isBreak = /[.,;:!?—–]$/.test(piece);             /* 句号/逗号后主动换行 */
-        if (isBreak && k < pieces.length - 1 && lines.length < maxLines - 1) {
-          lines.push(cur); cur = "";
-        }
+        addPiece(pieces[k]);
       }
       if (cur) lines.push(cur);
       var clean = [];
@@ -314,19 +316,22 @@ var lC = [`Congratulations. Your display has achieved texture.`,`What you are se
     function makeTypo(text, i) {
       var m = /[A-Za-z]+/.exec(text.slice(i));
       if (!m || m[0].length < 5) return null;
-      var w = m[0];
-      var a = text.charAt(i), b = text.charAt(i + 1);
-      var kinds = ["swap", "double", "adjacent", "omit", "extra"];
-      var k = kinds[Math.floor(Math.random() * kinds.length)];
-      var err, len = 2;
-      if (k === "swap" && /[A-Za-z]/.test(b)) err = b + a;                       /* research -> rseaerch */
-      else if (k === "double") { err = a + a; len = 1; }                          /* loading  -> looading */
-      else if (k === "omit" && w.length >= 3) { err = a + text.charAt(i + 2); }   /* website  -> webste  */
-      else if (k === "extra") { err = a + adjacent(a); len = 1; }                 /* screen   -> screwn */
-      else { err = adjacent(a) + (/[A-Za-z]/.test(b) ? b : ""); len = /[A-Za-z]/.test(b) ? 2 : 1; }
-      var correct = text.substr(i, len);
-      if (err === correct) err = adjacent(a) + (/[A-Za-z]/.test(b) ? b : "");
-      return { at: i, err: err, len: len, correct: correct };
+      var a = text.charAt(i), b = text.charAt(i + 1), c = text.charAt(i + 2);
+      var two = Math.random() < 0.45 && /[A-Za-z]/.test(b);      /* 单字符 / 双字符两种都要有 */
+      var err;
+      if (!two) {
+        err = Math.random() < 0.6 ? adjacent(a) : b;             /* 相邻键误触 / 漏打当前字 */
+        if (err === a || !err) err = adjacent(a);
+        if (err === a) return null;
+        return { at: i, err: err, len: 1, correct: a };
+      }
+      var kind = Math.random();
+      if (kind < 0.4) err = b + a;                              /* 相邻字符颠倒：reseaerch */
+      else if (kind < 0.7) err = a + a;                         /* 重复字符：looading */
+      else err = adjacent(a) + b;                               /* 相邻键 + 下一字 */
+      var correct = a + b;
+      if (err === correct) err = b + a;
+      return { at: i, err: err, len: 2, correct: correct };
     }
     var QUIPS = ["nope.", "again?", "close enough—", "I can type.", "apparently not.",
                  "one more time.", "let’s pretend that didn’t happen.", "you saw nothing."];
@@ -354,9 +359,9 @@ var lC = [`Congratulations. Your display has achieved texture.`,`What you are se
       var r = Math.random();
       var damnUsed = ss("gate.damn") === "1";
       var swearUsed = ss("gate.swear") === "1";
+      /* 非破防情况至多错一次；只有破防档才会连错（damn / shit 的因果链） */
       if (r < 0.70) return { typos: 0, frust: null };                            /* 70% 完全正常 */
-      if (r < 0.92) return { typos: 1, frust: null };                            /* 22% 一次 typo */
-      if (r < 0.97) return { typos: 2, frust: null };                            /*  5% 连续两次 */
+      if (r < 0.97) return { typos: 1, frust: null };                            /* 27% 只错一次 */
       if (r < 0.99) {                                                            /*  2% ...damn */
         return { typos: 2 + (Math.random() < 0.5 ? 1 : 0),
                  frust: damnUsed ? null : (Math.random() < 0.35 ? "quip" : "damn") };
@@ -366,13 +371,14 @@ var lC = [`Congratulations. Your display has achieved texture.`,`What you are se
     }
 
     /* 节奏：普通 35-65ms；空格后偶停；逗号 80-140；句号 120-220；破折号 120-250 */
-    function pace(ch, prev) {
-      var base = 45 + Math.random() * 35;                      /* 45–80ms */
-      if (ch === ",") return 100 + Math.random() * 70;         /* 100–170ms */
-      if (ch === ".") return 140 + Math.random() * 100;        /* 140–240ms */
-      if (ch === "—" || ch === "–") return 140 + Math.random() * 140;
-      if (ch === "\n") return 260 + Math.random() * 140;
-      if (prev === " " && Math.random() < 0.22) return base + 50 + Math.random() * 50;
+    function pace(ch, prev, fast) {
+      var base = fast ? 16 + Math.random() * 10 : 26 + Math.random() * 14;   /* 26–40ms */
+      if (ch === ",") return base + 40 + Math.random() * 30;                 /* 逗号稍顿 */
+      if (ch === ".") return base + 60 + Math.random() * 50;
+      if (ch === "—" || ch === "–") return base + 60 + Math.random() * 60;
+      if (ch === "\n") return base + 120 + Math.random() * 80;
+      if (prev === " " && Math.random() < 0.26) return base + 30 + Math.random() * 30;
+      if (prev === " " && Math.random() < 0.10) return base + 80 + Math.random() * 40;
       return base;
     }
 
@@ -392,6 +398,7 @@ var lC = [`Congratulations. Your display has achieved texture.`,`What you are se
     function typeNow(line, reduce) {
       if (!lineEl) return;
       var target = planLines(line);
+      var restarted = false;    /* 不再设时长上限：打字自然进行到结束；按钮仍三秒出现 */
       var btns = window.setTimeout(function () { if (!aborted) showButtons(true); }, 3000);
       timers.push(btns);
       if (reduce) { lineEl.textContent = target; showButtons(true); return; }
@@ -460,16 +467,19 @@ var lC = [`Congratulations. Your display has achieved texture.`,`What you are se
         var tp = makeTypo(target, spot);
         if (!tp) { then(); return; }
         usedTypos++;
-        put(tp.err, function () {
+        /* 打错之后不会立刻发现：先继续往下打几个字，才回头删到出错的地方 */
+        var ahead = 2 + Math.floor(Math.random() * 4);          /* 继续打 2–5 个字符 */
+        var tail = target.substr(tp.at + tp.len, ahead);
+        put(tp.err + tail, function () {
           later(function () {
-            if (usedTypos >= 2) lineEl.classList.add("caret-flash");   /* 第二次：光标多闪两下 */
+            if (usedTypos >= 2) lineEl.classList.add("caret-flash");
             later(function () {
               lineEl.classList.remove("caret-flash");
-              erase(tp.err.length, function () {
+              erase(tp.err.length + tail.length, function () {    /* 只删到出错处，前面的字不动 */
                 later(function () {
-                  slowUntil = i + tp.len + 8;
-                  put(tp.correct, function () {
-                    i += tp.len;
+                  slowUntil = tp.at + tp.len + tail.length + 8;
+                  put(tp.correct + tail, function () {
+                    i = tp.at + tp.len + tail.length;
                     if (usedTypos >= 2 && mood.frust && !frustDone) frust(then); else then();
                   });
                 }, 170);
@@ -488,7 +498,8 @@ var lC = [`Congratulations. Your display has achieved texture.`,`What you are se
         var ch = target.charAt(i), prev = target.charAt(i - 1);
         lineEl.textContent += ch;
         i++;
-        later(step, (i < slowUntil) ? Math.max(70, pace(ch, prev) * 1.5) : pace(ch, prev));
+        var d = pace(ch, prev, restarted);
+        later(step, (i < slowUntil) ? Math.max(70, d * 1.5) : d);
       }
       step();
     }
@@ -506,12 +517,60 @@ var lC = [`Congratulations. Your display has achieved texture.`,`What you are se
       document.documentElement.classList.remove("gate-locked");
       window.setTimeout(function () { if (gate.parentNode) gate.parentNode.removeChild(gate); }, reduce ? 60 : 900);
     }
+    /* 按 STFU 被点时的“心情”分层抽一句回应；组内依次取，避免翻来覆去同一句 */
+    var EXIT_TIERS = [
+      { w: 40, lines: ["fair.", "reasonable.", "understandable.", "noted.", "valid.", "okay, okay.",
+                       "message received.", "point taken.", "say no more.", "as requested.",
+                       "duly noted.", "can’t argue with that."] },
+      { w: 20, lines: ["rude.", "wow.", "charming.", "strong feedback.", "constructive.",
+                       "very academic.", "peer reviewed.", "major revision.", "harsh, but fair.",
+                       "well, damn.", "feedback accepted.", "noted with concern."] },
+      { w: 20, lines: ["feedback logged.", "response recorded.", "review acknowledged.",
+                       "comment accepted.", "decision: accepted.", "rebuttal withdrawn.",
+                       "revision submitted.", "review complete.", "consensus reached.",
+                       "statistically significant."] },
+      { w: 9,  lines: ["I was leaving anyway.", "finally.", "about time.", "good call.",
+                       "honestly? same.", "you have a point.", "this was unnecessary.",
+                       "I deserved that.", "that’s probably enough.", "yeah, let’s move on.",
+                       "the homepage agrees."] },
+      { w: 6,  lines: ["bold.", "efficient.", "direct.", "economical.", "succinct.",
+                       "refreshingly clear.", "minimalist feedback.", "zero ambiguity.",
+                       "excellent UX research.", "very actionable."] },
+      { w: 5,  lines: [":(", "ouch.", "brutal.", "damn.", "fine.", "whatever.",
+                       "you saw nothing.", "I’ll remember this.", "the button worked.",
+                       "working as intended."] }
+    ];
+    var EXITCUR = "gate.exit.v2";
+    function pickExit(forceTier) {
+      var st = {};
+      try { st = JSON.parse(localStorage.getItem(EXITCUR) || "{}") || {}; } catch (e) { st = {}; }
+      var total = 0, i;
+      for (i = 0; i < EXIT_TIERS.length; i++) total += EXIT_TIERS[i].w;
+      var gi = forceTier;
+      if (gi === undefined || gi === null) {
+        var r = Math.random() * total;
+        gi = 0;
+        for (i = 0; i < EXIT_TIERS.length; i++) { r -= EXIT_TIERS[i].w; if (r <= 0) { gi = i; break; } }
+      }
+      var bag = st["g" + gi];
+      if (!bag || !bag.length) {
+        bag = EXIT_TIERS[gi].lines.map(function (_, k) { return k; });
+        for (var a = bag.length - 1; a > 0; a--) {
+          var b = Math.floor(Math.random() * (a + 1)), tmp = bag[a];
+          bag[a] = bag[b]; bag[b] = tmp;
+        }
+      }
+      var idx = bag.pop();
+      st["g" + gi] = bag;
+      try { localStorage.setItem(EXITCUR, JSON.stringify(st)); } catch (e) {}
+      return EXIT_TIERS[gi].lines[idx];
+    }
     function dismiss(fromStfu) {
       aborted = true;
       clearAll();
       if (fromStfu) {
         if (swearing) { window.setTimeout(slideAway, 100); return; }   /* 正在骂：不回嘴，直接走 */
-        if (lineEl) lineEl.textContent = "fair.";
+        if (lineEl) lineEl.textContent = pickExit();
         window.setTimeout(slideAway, 150);
         return;
       }
