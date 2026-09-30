@@ -22,7 +22,7 @@
 <meta name="twitter:image" content="https://julian-donald-von.github.io/assets/img/og.png">
 
 <link rel="stylesheet" href="assets/fonts/latin.css">
-<link rel="stylesheet" href="assets/css/editorial.css?v20260930q">
+<link rel="stylesheet" href="assets/css/editorial.css?v20260930r">
 <noscript><style>.reveal{opacity:1;transform:none}</style></noscript>
 </head>
 <body>
@@ -116,7 +116,8 @@
 <div class="paper-fiber paper-fiber-b" aria-hidden="true"></div>
 
 <div id="gate" role="dialog" aria-label="Entrance">
-  <p id="gate-line"></p>
+  <p id="gate-line" aria-hidden="true"></p>
+  <p id="gate-sr" class="sr-only"></p>
   <div class="gate-actions">
     <button type="button" class="gate-btn" id="gate-ok">okay</button>
     <button type="button" class="gate-btn gate-btn-stfu" id="gate-stfu">STFU</button>
@@ -158,13 +159,35 @@ var lC = [`Congratulations. Your display has achieved texture.`,`What you are se
       for (i = 0; i < groups.length; i++) { r -= groups[i].w; if (r <= 0) return groups[i]; }
       return groups[0];
     }
+    /* 类内依次排序：每组打乱后依次取，取完一轮再重洗（跨刷新持久化） */
+    var BAGKEY = "gate.bag.v3";
+    var bags = {};
+    function loadBags() {
+      try { bags = JSON.parse(localStorage.getItem(BAGKEY) || "{}") || {}; } catch (e) { bags = {}; }
+      return bags;
+    }
+    function takeFromGroup(gid, lines) {
+      loadBags();
+      var b = bags[gid];
+      if (!b || !b.length) {
+        b = lines.slice();
+        for (var i = b.length - 1; i > 0; i--) {
+          var j = Math.floor(Math.random() * (i + 1)), tmp = b[i];
+          b[i] = b[j]; b[j] = tmp;
+        }
+      }
+      var line = b.pop();
+      bags[gid] = b;
+      try { localStorage.setItem(BAGKEY, JSON.stringify(bags)); } catch (e) {}
+      return line;
+    }
     function pickLine() {
       var light = window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches;
       var groups = (light && Math.random() < 0.3) ? LIGHTMODE : GENERAL;
       var line = "";
       for (var t = 0; t < 40; t++) {
-        var g = pickGroup(groups);
-        line = g.lines[Math.floor(Math.random() * g.lines.length)];
+        var g = pickGroup(groups);                        /* 大类：按权重 */
+        line = takeFromGroup((light ? "L" : "G") + groups.indexOf(g), g.lines);  /* 类内：依次 */
         if (recent.indexOf(line) === -1) break;
       }
       recent.push(line);
@@ -172,10 +195,13 @@ var lC = [`Congratulations. Your display has achieved texture.`,`What you are se
       try { localStorage.setItem(KEY, JSON.stringify(recent)); } catch (e) {}
       return line;
     }
-    /* ---- 人类打字机：主动分句换行 + 分层精神状态 ---- */
+    /* ---- 人类打字机 v3（按规格重写）---- */
     var timers = [];
-    function later(fn, ms) { var t = window.setTimeout(fn, ms); timers.push(t); return t; }
+    var aborted = false;
+    var swearing = false;
+    function later(fn, ms) { var t = window.setTimeout(function () { if (!aborted) fn(); }, ms); timers.push(t); return t; }
     function clearAll() { for (var i = 0; i < timers.length; i++) window.clearTimeout(timers[i]); timers.length = 0; }
+    function ss(k, v) { try { if (v === undefined) return sessionStorage.getItem(k); sessionStorage.setItem(k, v); } catch (e) { return null; } }
 
     /* 主动换行：语义块切分；每行宽度 <= 视口 2/3；最多三行（第三行兜底） */
     function textWidth(text) {
@@ -230,6 +256,7 @@ var lC = [`Congratulations. Your display has achieved texture.`,`What you are se
       return lines.join("\n");
     }
 
+    /* 键盘相邻键 */
     var KB = ["qwertyuiop", "asdfghjkl", "zxcvbnm"];
     function adjacent(ch) {
       var low = ch.toLowerCase();
@@ -244,138 +271,201 @@ var lC = [`Congratulations. Your display has achieved texture.`,`What you are se
       }
       return ch;
     }
-    function makeTypo(text, i) {
-      var seg = "", k = i;
-      while (k < text.length && seg.length < 2 && /[A-Za-z]/.test(text.charAt(k))) { seg += text.charAt(k); k++; }
-      if (!seg) return null;
-      var kinds = ["adjacent", "swap", "double", "omit"], kind = kinds[Math.floor(Math.random() * kinds.length)];
-      var err = seg;
-      if (kind === "adjacent") err = adjacent(seg.charAt(0)) + seg.slice(1);
-      else if (kind === "swap" && seg.length === 2) err = seg.charAt(1) + seg.charAt(0);
-      else if (kind === "double") err = seg.charAt(0) + seg;
-      else if (kind === "omit" && seg.length >= 2) err = seg.charAt(0);
-      else err = adjacent(seg.charAt(0)) + seg.slice(1);
-      if (err === seg) err = adjacent(seg.charAt(0)) + seg.slice(1);
-      return { seg: seg, err: err };
+    /* 有辨识度的词不参与 typo */
+    var PROTECTED = ["STFU", "JavaScript", "NeuroAI", "Reviewer", "PDF", "AI", "CV"];
+    function pickTypoSpot(text, used) {
+      var cands = [], re = /[A-Za-z]{5,}/g, m;
+      while ((m = re.exec(text))) {
+        var w = m[0];
+        var bad = PROTECTED.some(function (p) { return w.indexOf(p) === 0; });
+        if (!bad) cands.push(m.index);
+      }
+      if (!cands.length) return -1;
+      var far = cands.filter(function (s) {
+        return used.every(function (u) { return Math.abs(u - s) > 10; });
+      });
+      var pool = far.length ? far : cands;
+      return pool[Math.floor(Math.random() * pool.length)];
     }
-    var REPAIR = ["nope.", "again?", "close enough—", "I can type.", "apparently not.",
-                  "one more time.", "let’s pretend that didn’t happen.", "you saw nothing."];
-    var SWEAR = ["…damn", "…shit"];
+    function makeTypo(text, spot) {
+      var rest = text.slice(spot);
+      var m = /[A-Za-z]+/.exec(rest);
+      if (!m || m[0].length < 5) return null;
+      var w = m[0], off = Math.floor(Math.random() * (w.length - 1)), i = spot + off;
+      var a = text.charAt(i), b = text.charAt(i + 1);
+      var kinds = ["swap", "double", "adjacent", "omit", "extra"];
+      var k = kinds[Math.floor(Math.random() * kinds.length)];
+      var err, len = 2;
+      if (k === "swap" && /[A-Za-z]/.test(b)) err = b + a;
+      else if (k === "double") { err = a + a; len = 1; }
+      else if (k === "omit" && off + 2 < w.length) err = a + text.charAt(i + 2);
+      else if (k === "extra") { err = a + adjacent(a); len = 1; }
+      else { err = adjacent(a) + (/[A-Za-z]/.test(b) ? b : ""); len = /[A-Za-z]/.test(b) ? 2 : 1; }
+      var correct = text.substr(i, len);
+      if (err === correct) { err = adjacent(a) + b; }
+      return { at: i, err: err, len: len, correct: correct };
+    }
+    var QUIPS = ["nope.", "again?", "close enough—", "I can type.", "apparently not.",
+                 "one more time.", "let’s pretend that didn’t happen.", "you saw nothing."];
+    var QUIPCUR = "gate.quip.v2";
+    function nextQuip() {
+      var i = 0;
+      try { i = parseInt(localStorage.getItem(QUIPCUR) || "0", 10); } catch (e) { i = 0; }
+      if (isNaN(i) || i < 0) i = 0;
+      var q = QUIPS[i % QUIPS.length];
+      try { localStorage.setItem(QUIPCUR, String((i + 1) % QUIPS.length)); } catch (e) {}
+      return q;
+    }
+    /* 彩蛋依次排序：rare quips 按列表顺序出现，走完一轮再从头（不随机、不重复） */
+    var QUIPCUR = "gate.quip.v1";
+    function nextQuip() {
+      var i = 0;
+      try { i = parseInt(localStorage.getItem(QUIPCUR) || "0", 10); } catch (e) { i = 0; }
+      if (isNaN(i) || i < 0) i = 0;
+      var q = QUIPS[i % QUIPS.length];
+      try { localStorage.setItem(QUIPCUR, String((i + 1) % QUIPS.length)); } catch (e) {}
+      return q;
+    }
 
     function rollMood() {
-      var r = Math.random(), used = false;
-      try { used = sessionStorage.getItem("gate.meltdown.v1") === "1"; } catch (e) {}
-      if (r < 0.70) return { typos: 0, repair: null };
-      if (r < 0.90) return { typos: 1, repair: null };
-      if (r < 0.97) return { typos: 2, repair: null, hesitate: true };
-      if (r < 0.99) return used ? { typos: 2, repair: null, hesitate: true } : { typos: 3, repair: "swear" };
-      if (used) return { typos: 2, repair: null, hesitate: true };
-      return { typos: 3, repair: Math.random() < 0.5 ? "whatever" : "giveup" };
+      var r = Math.random();
+      var damnUsed = ss("gate.damn") === "1";
+      var swearUsed = ss("gate.swear") === "1";
+      if (r < 0.70) return { typos: 0, frust: null };                            /* 70% 完全正常 */
+      if (r < 0.92) return { typos: 1, frust: null };                            /* 22% 一次 typo */
+      if (r < 0.97) return { typos: 2, frust: null };                            /*  5% 连续两次 */
+      if (r < 0.99) {                                                            /*  2% ...damn */
+        return { typos: 2 + (Math.random() < 0.5 ? 1 : 0),
+                 frust: damnUsed ? null : (Math.random() < 0.35 ? "quip" : "damn") };
+      }
+      return { typos: 3, frust: swearUsed ? (damnUsed ? null : "damn")           /*  1% ...shit */
+                                         : (Math.random() < 0.3 ? "quip" : "shit") };
+    }
+
+    /* 节奏：普通 35-65ms；空格后偶停；逗号 80-140；句号 120-220；破折号 120-250 */
+    function pace(ch, prev) {
+      var base = 35 + Math.random() * 30;
+      if (ch === ",") return 80 + Math.random() * 60;
+      if (ch === ".") return 120 + Math.random() * 100;
+      if (ch === "—" || ch === "–") return 120 + Math.random() * 130;
+      if (ch === "\n") return 240 + Math.random() * 120;
+      if (prev === " " && Math.random() < 0.22) return base + 40 + Math.random() * 40;
+      return base;
     }
 
     function typeLine(line) {
       if (!lineEl) return;
-      if (document.fonts && document.fonts.ready) { document.fonts.ready.then(function () { typeLineNow(line); }); }
-      else typeLineNow(line);
+      var sr = document.getElementById("gate-sr");
+      if (sr) sr.textContent = line;
+      var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (reduce || !document.fonts || !document.fonts.ready) {
+        if (document.fonts && document.fonts.ready) { document.fonts.ready.then(function () { typeNow(line, reduce); }); }
+        else typeNow(line, reduce);
+        return;
+      }
+      document.fonts.ready.then(function () { typeNow(line, false); });
     }
-    function typeLineNow(line) {
+
+    function typeNow(line, reduce) {
       if (!lineEl) return;
       var target = planLines(line);
-      var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      var btns = window.setTimeout(function () { if (!aborted) showButtons(true); }, 3000);
+      timers.push(btns);
       if (reduce) { lineEl.textContent = target; showButtons(true); return; }
-      var budget = 3000;
-      var per = Math.max(13, Math.min(52, Math.min(2400, budget * 0.78) / Math.max(target.length, 1)));
+
+      var i = 0, usedTypos = 0, slowUntil = -1, frustDone = false;
       var mood = rollMood();
-      var done = false, i = 0, usedTypos = 0;
-      var spots = [];
+      var spots = [], used = [];
       for (var t = 0; t < mood.typos; t++) {
-        spots.push(Math.floor(target.length * (0.25 + 0.6 * Math.random())));
+        var s = pickTypoSpot(target, used);
+        if (s < 0) break;
+        used.push(s); spots.push(s);
       }
       spots.sort(function (a, b) { return a - b; });
       var spotIdx = 0;
-      var repairAt = mood.repair ? Math.min(mood.typos, 2) : -1;
       lineEl.textContent = "";
       lineEl.classList.add("typing");
-      window.setTimeout(function () { if (!done) showButtons(false); }, budget);
+
       function finish() {
-        done = true; clearAll();
+        if (aborted) return;
         lineEl.textContent = target;            /* 兜底：最终文案必然完全正确 */
         lineEl.classList.remove("typing");
         showButtons(true);
       }
-      var slowUntil = -1;                       /* 出错之后进入“谨慎慢速”窗口 */
       function erase(n, then) {
         var left = n;
         (function one() {
+          if (aborted) return;
           lineEl.textContent = lineEl.textContent.slice(0, -1);
           left--;
-          if (left > 0) later(one, 110); else then();
+          if (left > 0) later(one, 90); else then();
         })();
       }
-      function putSlow(str, then, mult) {
-        var k = 0, d = Math.max(70, per * (mult || 1.7));
+      function put(str, then, mult) {
+        var k = 0, d = Math.max(60, (35 + Math.random() * 30) * (mult || 1.6));
         (function one() {
+          if (aborted) return;
           lineEl.textContent += str.charAt(k);
           k++;
           if (k < str.length) later(one, d); else then();
         })();
       }
-      function repair(then) {
-        var phrase;
-        if (mood.repair === "swear") phrase = SWEAR[Math.floor(Math.random() * SWEAR.length)];
-        else if (mood.repair === "giveup") phrase = "…shit";
-        else if (mood.repair === "whatever") phrase = "Whatever.";
-        else phrase = REPAIR[Math.floor(Math.random() * REPAIR.length)];
-        try { sessionStorage.setItem("gate.meltdown.v1", "1"); } catch (e) {}
-        putSlow(phrase, function () {
+      function frust(then) {
+        frustDone = true;
+        var kind = mood.frust;
+        var phrase = kind === "damn" ? "…damn" : kind === "shit" ? "…shit" : nextQuip();
+        if (kind === "damn") ss("gate.damn", "1");
+        if (kind === "shit") ss("gate.swear", "1");
+        swearing = (kind === "damn" || kind === "shit");
+        put(phrase, function () {
           later(function () {
             erase(phrase.length, function () {
-              if (mood.repair === "giveup") { later(function () { lineEl.textContent = ""; later(finish, 90); }, 120); return; }
-              then();
+              swearing = false;
+              later(function () {
+                if (kind === "shit") {                 /* 放弃手打：剩下的直接贴上去 */
+                  lineEl.textContent = "";
+                  later(finish, 110);
+                  return;
+                }
+                then();
+              }, 150 + Math.random() * 150);
             });
-          }, 640 + Math.random() * 220);
+          }, kind === "shit" ? 700 + Math.random() * 400 : 500 + Math.random() * 400);
         });
       }
-      function runTypo(then) {
-        var tp = makeTypo(target, i);
+      function runTypo(spot, then) {
+        var tp = makeTypo(target, spot);
         if (!tp) { then(); return; }
         usedTypos++;
-        putSlow(tp.err, function () {
+        put(tp.err, function () {
           later(function () {
-            var afterErase = function () {
-              later(function () {                       /* 换气：删完之后愣一下 */
-                slowUntil = i + tp.seg.length + 8;      /* 接下来几个字都打得小心一点 */
-                putSlow(tp.seg, function () {
-                  i += tp.seg.length;
-                  if (usedTypos === repairAt && mood.repair) repair(then); else then();
-                });
-              }, 160);
-            };
-            if (mood.repair === "whatever" && usedTypos === 1) {
-              putSlow(" Whatever.", function () {
+            if (usedTypos >= 2) lineEl.classList.add("caret-flash");   /* 第二次：光标多闪两下 */
+            later(function () {
+              lineEl.classList.remove("caret-flash");
+              erase(tp.err.length, function () {
                 later(function () {
-                  erase(tp.err.length + 10, function () {
-                    mood.repair = null;            /* 重来一次，之后不再出错 */
-                    afterErase();
+                  slowUntil = i + tp.len + 8;
+                  put(tp.correct, function () {
+                    i += tp.len;
+                    if (usedTypos >= 2 && mood.frust && !frustDone) frust(then); else then();
                   });
-                }, 700);
+                }, 170);
               });
-            } else erase(tp.err.length, afterErase);
-          }, 340 + Math.random() * 360);              /* 打完错字先愣住，让眼睛看清 */
+            }, usedTypos >= 2 ? (450 + Math.random() * 200) + 360 : 250 + Math.random() * 300);
+          }, 0);
         });
       }
       function step() {
+        if (aborted) return;
         if (i >= target.length) { finish(); return; }
         if (spotIdx < spots.length && i >= spots[spotIdx]) {
-          spotIdx++;
-          var nx = target.charAt(i);
-          if (/[A-Za-z]/.test(nx)) { runTypo(step); return; }
+          var s = spots[spotIdx++];
+          if (i <= s) { runTypo(s, step); return; }
         }
-        var ch = target.charAt(i);
+        var ch = target.charAt(i), prev = target.charAt(i - 1);
         lineEl.textContent += ch;
         i++;
-        var delay = (i < slowUntil) ? Math.max(70, per * 1.5) : per;
-        later(step, ch === "\n" ? 260 : delay);   /* 换行/谨慎窗口都稍慢 */
+        later(step, (i < slowUntil) ? Math.max(70, pace(ch, prev) * 1.5) : pace(ch, prev));
       }
       step();
     }
@@ -388,16 +478,26 @@ var lC = [`Congratulations. Your display has achieved texture.`,`What you are se
     typeLine(pickLine());
     function slideAway() {
       if (gate.classList.contains("gate--open")) return;
+      var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       gate.classList.add("gate--open");
       document.documentElement.classList.remove("gate-locked");
-      window.setTimeout(function () { if (gate.parentNode) gate.parentNode.removeChild(gate); }, 900);
+      window.setTimeout(function () { if (gate.parentNode) gate.parentNode.removeChild(gate); }, reduce ? 60 : 900);
     }
     function dismiss(fromStfu) {
+      aborted = true;
       clearAll();
-      if (fromStfu && lineEl && lineEl.classList.contains("typing")) {
-        lineEl.textContent = "fair.";              /* 被骂了以后非常专业地照常开门 */
-        window.setTimeout(slideAway, 120);
-      } else slideAway();
+      if (fromStfu) {
+        if (swearing) { window.setTimeout(slideAway, 100); return; }   /* 正在骂：不回嘴，直接走 */
+        if (lineEl) lineEl.textContent = "fair.";
+        window.setTimeout(slideAway, 150);
+        return;
+      }
+      if (Math.random() < 0.05) {                                      /* okay 偶尔也回一句 */
+        if (lineEl) lineEl.textContent = Math.random() < 0.5 ? "bold." : "sure.";
+        window.setTimeout(slideAway, 150);
+        return;
+      }
+      slideAway();
     }
     var ok = document.getElementById("gate-ok"), stfu = document.getElementById("gate-stfu");
     if (ok) ok.addEventListener("click", function () { dismiss(false); });
