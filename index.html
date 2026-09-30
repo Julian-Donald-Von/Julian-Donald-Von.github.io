@@ -22,7 +22,7 @@
 <meta name="twitter:image" content="https://julian-donald-von.github.io/assets/img/og.png">
 
 <link rel="stylesheet" href="assets/fonts/latin.css">
-<link rel="stylesheet" href="assets/css/editorial.css?v20260930t">
+<link rel="stylesheet" href="assets/css/editorial.css?v20260930u">
 <noscript><style>.reveal{opacity:1;transform:none}</style></noscript>
 </head>
 <body>
@@ -367,12 +367,12 @@ var lC = [`Congratulations. Your display has achieved texture.`,`What you are se
 
     /* 节奏：普通 35-65ms；空格后偶停；逗号 80-140；句号 120-220；破折号 120-250 */
     function pace(ch, prev) {
-      var base = 35 + Math.random() * 30;
-      if (ch === ",") return 80 + Math.random() * 60;
-      if (ch === ".") return 120 + Math.random() * 100;
-      if (ch === "—" || ch === "–") return 120 + Math.random() * 130;
-      if (ch === "\n") return 240 + Math.random() * 120;
-      if (prev === " " && Math.random() < 0.22) return base + 40 + Math.random() * 40;
+      var base = 45 + Math.random() * 35;                      /* 45–80ms */
+      if (ch === ",") return 100 + Math.random() * 70;         /* 100–170ms */
+      if (ch === ".") return 140 + Math.random() * 100;        /* 140–240ms */
+      if (ch === "—" || ch === "–") return 140 + Math.random() * 140;
+      if (ch === "\n") return 260 + Math.random() * 140;
+      if (prev === " " && Math.random() < 0.22) return base + 50 + Math.random() * 50;
       return base;
     }
 
@@ -421,7 +421,7 @@ var lC = [`Congratulations. Your display has achieved texture.`,`What you are se
           if (aborted) return;
           lineEl.textContent = lineEl.textContent.slice(0, -1);
           left--;
-          if (left > 0) later(one, 115); else then();
+          if (left > 0) later(one, 150); else then();
         })();
       }
       function put(str, then, mult) {
