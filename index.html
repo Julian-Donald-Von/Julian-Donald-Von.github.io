@@ -32,12 +32,12 @@
 <div class="grain" aria-hidden="true"></div>
 
 <div class="page">
+  <div class="relief relief-l" aria-hidden="true"></div>
+  <div class="relief relief-r" aria-hidden="true"></div>
   <div class="axis" aria-hidden="true"></div>
 
   <!-- ===================== Masthead ===================== -->
   <header class="masthead zone-ivory">
-  <div class="relief relief-l" aria-hidden="true"></div>
-  <div class="relief relief-r" aria-hidden="true"></div>
     <div class="grid">
       <div class="colophon">
         <span>Academic Profile</span>
@@ -101,8 +101,6 @@
 
     <!-- ===================== 01 Profile ===================== -->
     <section class="sec zone-ivory reveal" id="profile">
-  <div class="relief relief-l" aria-hidden="true"></div>
-  <div class="relief relief-r" aria-hidden="true"></div>
       <div class="grid">
         <div class="idx"><span class="n">01</span>Profile</div>
         <div class="sec-body">
@@ -506,5 +504,30 @@
 </div>
 
 <script src="assets/js/site.js?v20260930g" defer></script>
+<script>
+          /* 单条连续樱花柱：底边对齐 01 Profile 底部，向上贯穿报头。
+             CSS 无法得知两段合计高度，只能实测（字体加载/窗口变化都要重算）。 */
+          (function () {
+            var page = document.querySelector('.page');
+            var mast = document.querySelector('.masthead');
+            var prof = document.getElementById('profile');
+            if (!page) return;
+            var els = document.querySelectorAll('.relief-l, .relief-r');
+            function layout() {
+              var top = mast.offsetTop;
+              var h = prof.offsetTop + prof.offsetHeight - top;
+              if (h > 0) {
+                for (var i = 0; i < els.length; i++) {
+                  els[i].style.top = top + 'px';
+                  els[i].style.height = h + 'px';
+                }
+              }
+            }
+            layout();
+            window.addEventListener('load', layout);
+            window.addEventListener('resize', layout);
+            if (document.fonts && document.fonts.ready) { document.fonts.ready.then(layout); }
+          })();
+        </script>
 </body>
 </html>
