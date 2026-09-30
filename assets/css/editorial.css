@@ -739,6 +739,8 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   font-size: clamp(2rem, 4vw, 4.5rem); line-height: 1.16;
   max-width: min(1200px, 92vw); white-space: pre-wrap; text-wrap: pretty;
   line-height: 1.22;
+  /* 预留三行高度：行数 1→2→3 变化时按钮不位移、文字不抽搐 */
+  min-height: 3.66em;
 }
 .gate-actions {
   display: flex; flex-direction: column; align-items: center;
