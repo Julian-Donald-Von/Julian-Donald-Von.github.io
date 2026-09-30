@@ -22,7 +22,7 @@
 <meta name="twitter:image" content="https://julian-donald-von.github.io/assets/img/og.png">
 
 <link rel="stylesheet" href="assets/fonts/latin.css">
-<link rel="stylesheet" href="assets/css/editorial.css?v20260930p">
+<link rel="stylesheet" href="assets/css/editorial.css?v20260930q">
 <noscript><style>.reveal{opacity:1;transform:none}</style></noscript>
 </head>
 <body>
@@ -172,49 +172,210 @@ var lC = [`Congratulations. Your display has achieved texture.`,`What you are se
       try { localStorage.setItem(KEY, JSON.stringify(recent)); } catch (e) {}
       return line;
     }
-    /* ---- 打字机出场：3 秒预算；回退不推进预算；3 秒未完先只给 STFU ---- */
+    /* ---- 人类打字机：主动分句换行 + 分层精神状态 ---- */
+    var timers = [];
+    function later(fn, ms) { var t = window.setTimeout(fn, ms); timers.push(t); return t; }
+    function clearAll() { for (var i = 0; i < timers.length; i++) window.clearTimeout(timers[i]); timers.length = 0; }
+
+    /* 主动换行：语义块切分；每行宽度 <= 视口 2/3；最多三行（第三行兜底） */
+    function textWidth(text) {
+      var cs = window.getComputedStyle(lineEl);
+      var cv = document.createElement("canvas");
+      var ctx = cv.getContext && cv.getContext("2d");
+      if (!ctx) return 0;
+      ctx.font = cs.fontStyle + " " + cs.fontWeight + " " + cs.fontSize + " " + cs.fontFamily;
+      return ctx.measureText(text).width;
+    }
+    function planLines(text) {
+      var maxW = Math.max(320, window.innerWidth * 2 / 3);
+      var maxLines = 3;
+      var ready = !(document.fonts && document.fonts.status && document.fonts.status !== "loaded");
+      var fit = function (s) {
+        var w = ready ? textWidth(s) : 0;
+        if (!w) {
+          var fs = parseFloat(window.getComputedStyle(lineEl).fontSize) || 40;
+          return s.length <= Math.max(24, Math.floor(maxW / (fs * 0.52)));
+        }
+        return w <= maxW;
+      };
+      if (fit(text)) return text;
+      var chunks = [], buf = "";
+      for (var i = 0; i < text.length; i++) {
+        var c = text.charAt(i);
+        buf += c;
+        if (c === "," || c === ";" || c === ":" || c === "—" || c === "–") { chunks.push(buf.trim()); buf = ""; }
+      }
+      if (buf.trim()) chunks.push(buf.trim());
+      var refined = [];
+      chunks.forEach(function (ch) {
+        ch.split(/\s+(?=(?:and|but|so|then|while)\s)/).forEach(function (p) {
+          if (p.trim()) refined.push(p.trim());
+        });
+      });
+      var lines = [], cur = "";
+      for (var k = 0; k < refined.length; k++) {
+        var piece = refined[k];
+        if (lines.length === maxLines - 1) {
+          cur = cur ? cur + " " + refined.slice(k).join(" ") : refined.slice(k).join(" ");
+          break;
+        }
+        var trial = cur ? cur + " " + piece : piece;
+        if (!cur || fit(trial)) cur = trial;
+        else { lines.push(cur); cur = piece; }
+      }
+      if (cur) lines.push(cur);
+      while (lines.length > maxLines) {
+        lines[maxLines - 1] = lines[maxLines - 1] + " " + lines.splice(maxLines, 1)[0];
+      }
+      return lines.join("\n");
+    }
+
+    var KB = ["qwertyuiop", "asdfghjkl", "zxcvbnm"];
+    function adjacent(ch) {
+      var low = ch.toLowerCase();
+      for (var r = 0; r < KB.length; r++) {
+        var p = KB[r].indexOf(low);
+        if (p > -1) {
+          var q = p + (Math.random() < 0.5 ? -1 : 1);
+          if (q < 0 || q >= KB[r].length) q = p + (q < 0 ? 1 : -1);
+          var c = KB[r].charAt(Math.max(0, Math.min(KB[r].length - 1, q)));
+          return ch === ch.toUpperCase() ? c.toUpperCase() : c;
+        }
+      }
+      return ch;
+    }
+    function makeTypo(text, i) {
+      var seg = "", k = i;
+      while (k < text.length && seg.length < 2 && /[A-Za-z]/.test(text.charAt(k))) { seg += text.charAt(k); k++; }
+      if (!seg) return null;
+      var kinds = ["adjacent", "swap", "double", "omit"], kind = kinds[Math.floor(Math.random() * kinds.length)];
+      var err = seg;
+      if (kind === "adjacent") err = adjacent(seg.charAt(0)) + seg.slice(1);
+      else if (kind === "swap" && seg.length === 2) err = seg.charAt(1) + seg.charAt(0);
+      else if (kind === "double") err = seg.charAt(0) + seg;
+      else if (kind === "omit" && seg.length >= 2) err = seg.charAt(0);
+      else err = adjacent(seg.charAt(0)) + seg.slice(1);
+      if (err === seg) err = adjacent(seg.charAt(0)) + seg.slice(1);
+      return { seg: seg, err: err };
+    }
+    var REPAIR = ["nope.", "again?", "close enough—", "I can type.", "apparently not.",
+                  "one more time.", "let’s pretend that didn’t happen.", "you saw nothing."];
+    var SWEAR = ["…damn", "…shit"];
+
+    function rollMood() {
+      var r = Math.random(), used = false;
+      try { used = sessionStorage.getItem("gate.meltdown.v1") === "1"; } catch (e) {}
+      if (r < 0.70) return { typos: 0, repair: null };
+      if (r < 0.90) return { typos: 1, repair: null };
+      if (r < 0.97) return { typos: 2, repair: null, hesitate: true };
+      if (r < 0.99) return used ? { typos: 2, repair: null, hesitate: true } : { typos: 3, repair: "swear" };
+      if (used) return { typos: 2, repair: null, hesitate: true };
+      return { typos: 3, repair: Math.random() < 0.5 ? "whatever" : "giveup" };
+    }
+
     function typeLine(line) {
       if (!lineEl) return;
+      if (document.fonts && document.fonts.ready) { document.fonts.ready.then(function () { typeLineNow(line); }); }
+      else typeLineNow(line);
+    }
+    function typeLineNow(line) {
+      if (!lineEl) return;
+      var target = planLines(line);
       var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      if (reduce) { lineEl.textContent = line; showButtons(true); return; }
-      var budget = 3000, spend = Math.min(2400, budget * 0.8);
-      var per = Math.max(14, Math.min(60, spend / Math.max(line.length, 1)));
-      var text = line, i = 0, typos = 0, done = false;
-      var swear = (Math.random() < 0.5) ? "…damn." : "…shit.";
-      var target = line;
+      if (reduce) { lineEl.textContent = target; showButtons(true); return; }
+      var budget = 3000;
+      var per = Math.max(13, Math.min(52, Math.min(2400, budget * 0.78) / Math.max(target.length, 1)));
+      var mood = rollMood();
+      var done = false, i = 0, usedTypos = 0;
+      var spots = [];
+      for (var t = 0; t < mood.typos; t++) {
+        spots.push(Math.floor(target.length * (0.25 + 0.6 * Math.random())));
+      }
+      spots.sort(function (a, b) { return a - b; });
+      var spotIdx = 0;
+      var repairAt = mood.repair ? Math.min(mood.typos, 2) : -1;
       lineEl.textContent = "";
       lineEl.classList.add("typing");
       window.setTimeout(function () { if (!done) showButtons(false); }, budget);
       function finish() {
-        done = true;
+        done = true; clearAll();
+        lineEl.textContent = target;            /* 兜底：最终文案必然完全正确 */
         lineEl.classList.remove("typing");
         showButtons(true);
       }
-      function key(c) {
-        var idx = "abcdefghijklmnopqrstuvwxyz".indexOf(c.toLowerCase());
-        if (idx < 0) return c;
-        var sib = "abcdefghijklmnopqrstuvwxyz";
-        var pick = sib.charAt(Math.min(25, Math.max(0, idx + (Math.random() < 0.5 ? -1 : 1))));
-        return (c === c.toUpperCase()) ? pick.toUpperCase() : pick;
+      var slowUntil = -1;                       /* 出错之后进入“谨慎慢速”窗口 */
+      function erase(n, then) {
+        var left = n;
+        (function one() {
+          lineEl.textContent = lineEl.textContent.slice(0, -1);
+          left--;
+          if (left > 0) later(one, 110); else then();
+        })();
+      }
+      function putSlow(str, then, mult) {
+        var k = 0, d = Math.max(70, per * (mult || 1.7));
+        (function one() {
+          lineEl.textContent += str.charAt(k);
+          k++;
+          if (k < str.length) later(one, d); else then();
+        })();
+      }
+      function repair(then) {
+        var phrase;
+        if (mood.repair === "swear") phrase = SWEAR[Math.floor(Math.random() * SWEAR.length)];
+        else if (mood.repair === "giveup") phrase = "…shit";
+        else if (mood.repair === "whatever") phrase = "Whatever.";
+        else phrase = REPAIR[Math.floor(Math.random() * REPAIR.length)];
+        try { sessionStorage.setItem("gate.meltdown.v1", "1"); } catch (e) {}
+        putSlow(phrase, function () {
+          later(function () {
+            erase(phrase.length, function () {
+              if (mood.repair === "giveup") { later(function () { lineEl.textContent = ""; later(finish, 90); }, 120); return; }
+              then();
+            });
+          }, 640 + Math.random() * 220);
+        });
+      }
+      function runTypo(then) {
+        var tp = makeTypo(target, i);
+        if (!tp) { then(); return; }
+        usedTypos++;
+        putSlow(tp.err, function () {
+          later(function () {
+            var afterErase = function () {
+              later(function () {                       /* 换气：删完之后愣一下 */
+                slowUntil = i + tp.seg.length + 8;      /* 接下来几个字都打得小心一点 */
+                putSlow(tp.seg, function () {
+                  i += tp.seg.length;
+                  if (usedTypos === repairAt && mood.repair) repair(then); else then();
+                });
+              }, 160);
+            };
+            if (mood.repair === "whatever" && usedTypos === 1) {
+              putSlow(" Whatever.", function () {
+                later(function () {
+                  erase(tp.err.length + 10, function () {
+                    mood.repair = null;            /* 重来一次，之后不再出错 */
+                    afterErase();
+                  });
+                }, 700);
+              });
+            } else erase(tp.err.length, afterErase);
+          }, 340 + Math.random() * 360);              /* 打完错字先愣住，让眼睛看清 */
+        });
       }
       function step() {
-        if (i >= target.length) {
-          if (typos >= 3 && Math.random() < 0.5) { target = target + " " + swear; }
-          if (i >= target.length) { finish(); return; }
+        if (i >= target.length) { finish(); return; }
+        if (spotIdx < spots.length && i >= spots[spotIdx]) {
+          spotIdx++;
+          var nx = target.charAt(i);
+          if (/[A-Za-z]/.test(nx)) { runTypo(step); return; }
         }
         var ch = target.charAt(i);
-        if (/[a-zA-Z]/.test(ch) && Math.random() < 0.035) {
-          typos++;
-          lineEl.textContent += key(ch);
-          window.setTimeout(function () {
-            lineEl.textContent = lineEl.textContent.slice(0, -1);
-            window.setTimeout(function () { lineEl.textContent += ch; i++; step(); }, per);
-          }, 150);
-          return;
-        }
         lineEl.textContent += ch;
         i++;
-        window.setTimeout(step, per);
+        var delay = (i < slowUntil) ? Math.max(70, per * 1.5) : per;
+        later(step, ch === "\n" ? 260 : delay);   /* 换行/谨慎窗口都稍慢 */
       }
       step();
     }
@@ -225,15 +386,22 @@ var lC = [`Congratulations. Your display has achieved texture.`,`What you are se
       if (both) acts.classList.add("gate-actions--both");
     }
     typeLine(pickLine());
-    function dismiss() {
+    function slideAway() {
       if (gate.classList.contains("gate--open")) return;
       gate.classList.add("gate--open");
       document.documentElement.classList.remove("gate-locked");
       window.setTimeout(function () { if (gate.parentNode) gate.parentNode.removeChild(gate); }, 900);
     }
+    function dismiss(fromStfu) {
+      clearAll();
+      if (fromStfu && lineEl && lineEl.classList.contains("typing")) {
+        lineEl.textContent = "fair.";              /* 被骂了以后非常专业地照常开门 */
+        window.setTimeout(slideAway, 120);
+      } else slideAway();
+    }
     var ok = document.getElementById("gate-ok"), stfu = document.getElementById("gate-stfu");
-    if (ok) ok.addEventListener("click", dismiss);
-    if (stfu) stfu.addEventListener("click", dismiss);
+    if (ok) ok.addEventListener("click", function () { dismiss(false); });
+    if (stfu) stfu.addEventListener("click", function () { dismiss(true); });
     document.documentElement.classList.add("gate-locked");
 
     /* ---- 纸面跟随鼠标：位移视差（不改光照 ⇒ 纸色恒定） ---- */
