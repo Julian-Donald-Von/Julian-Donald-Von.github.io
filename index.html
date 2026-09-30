@@ -84,9 +84,15 @@
 
         <figure class="masthead-face">
           <img class="face" src="assets/img/avatar_face.png"
-               srcset="assets/img/avatar_face.png 1x, assets/img/avatar_face@2x.png 2x"
                alt="Dongle Feng" width="479" height="479">
         </figure>
+        <script>
+          (function () {
+            var i = Math.floor(Math.random() * 8) + 1;
+            document.currentScript.previousElementSibling.querySelector('img.face')
+              .src = 'assets/img/avatar_r' + i + '.png';
+          })();
+        </script>
       </div>
     </div>
   </header>
