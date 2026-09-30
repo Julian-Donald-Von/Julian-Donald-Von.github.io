@@ -199,10 +199,13 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 
 .masthead-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1fr);   /* 报头不再放肖像，取消右侧图版列 */
+  /* 左：姓名/学历/导语；右：头像方块（占住原来的大留白） */
+  grid-template-columns: minmax(0, 1fr) clamp(132px, 13.6vw, 196px);
+  column-gap: clamp(26px, 4.6vw, 76px);
+  align-items: start;
   margin-top: 44px;
 }
-.masthead-grid > div { max-width: 780px; }
+.masthead-grid > div { max-width: 720px; }
 
 /* 正文两端对齐：按内容宽度撑满（含自动断词，避免大词距） */
 .prose, .lede, .rows .note, .entries .note {
@@ -212,11 +215,11 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   hyphens: auto;
 }
 
-/* 名字右侧的头像贴纸 */
-.namerow { display: flex; flex-wrap: wrap; align-items: center; gap: clamp(14px, 2vw, 28px); }
-.namerow .face {
-  width: clamp(60px, 6.6vw, 92px); height: auto; display: block; flex: none;
-  filter: grayscale(14%) saturate(.94);
+/* 右列头像：见方，高度对齐"姓名 + 两行学历"那一块 */
+.masthead-face { margin: 4px 0 0; }
+.masthead-face .face {
+  width: 100%; height: auto; aspect-ratio: 1 / 1; object-fit: contain;
+  display: block; filter: grayscale(14%) saturate(.94);
 }
 @media (max-width: 780px) {
   .masthead-grid { grid-template-columns: 1fr; }
@@ -411,7 +414,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 /* ---------- 10. 三视图图版 ---------- */
 .plates { max-width: var(--col); }
 /* 01 Profile 里的大立绘：按自然比例，宽度收窄，不占满整栏 */
-.plate-portrait { max-width: 300px; margin-bottom: clamp(26px, 3.6vw, 46px); }
+.plate-portrait { max-width: 340px; margin-bottom: clamp(26px, 3.6vw, 46px); }
 .plate-portrait img { height: auto; object-position: center; }
 .plate-strip {
   display: grid; grid-template-columns: repeat(3, 1fr);
