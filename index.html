@@ -22,7 +22,7 @@
 <meta name="twitter:image" content="https://julian-donald-von.github.io/assets/img/og.png">
 
 <link rel="stylesheet" href="assets/fonts/latin.css">
-<link rel="stylesheet" href="assets/css/editorial.css?v20260930m">
+<link rel="stylesheet" href="assets/css/editorial.css?v20260930n">
 <noscript><style>.reveal{opacity:1;transform:none}</style></noscript>
 </head>
 <body>
@@ -596,12 +596,13 @@
             if (document.fonts && document.fonts.ready) { document.fonts.ready.then(layout); }
                       /* Plate 02 顶边与 02 Research 第一条 row 的上横线对齐（实测，随窗口自适应） */
             function alignPlate02() {
-              var row = document.querySelector('#research .rows .row');
+              var rows = document.querySelectorAll('#research .rows .row');
               var fig = document.querySelector('#research .plate-figure');
-              if (!row || !fig) return;
+              if (!rows.length || !fig) return;
+              var last = rows[rows.length - 1];
               var cur = parseFloat(fig.style.marginTop) || 0;
-              fig.style.marginTop = (cur + (row.getBoundingClientRect().top
-                                            - fig.getBoundingClientRect().top)) + 'px';
+              fig.style.marginTop = (cur + (last.getBoundingClientRect().bottom
+                                            - fig.getBoundingClientRect().bottom)) + 'px';
             }
 
 })();
