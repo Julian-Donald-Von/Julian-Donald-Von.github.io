@@ -22,7 +22,7 @@
 <meta name="twitter:image" content="https://julian-donald-von.github.io/assets/img/og.png">
 
 <link rel="stylesheet" href="assets/fonts/latin.css">
-<link rel="stylesheet" href="assets/css/editorial.css?v20260930i">
+<link rel="stylesheet" href="assets/css/editorial.css?v20260930l">
 <noscript><style>.reveal{opacity:1;transform:none}</style></noscript>
 </head>
 <body>
@@ -31,8 +31,8 @@
 <div class="grain" aria-hidden="true"></div>
 
 <div class="page">
-  <div class="relief relief-l" aria-hidden="true"></div>
-  <div class="relief relief-r" aria-hidden="true"></div>
+  <div class="relief relief-l" data-ar="2.8657" aria-hidden="true"></div>
+  <div class="relief relief-r" data-ar="3.1475" aria-hidden="true"></div>
   <div class="axis" aria-hidden="true"></div>
 
   <!-- ===================== Masthead ===================== -->
@@ -187,7 +187,7 @@
           </div>
         </div>
         <div class="sec-note aside">
-          <p>One method runs through all four: make the object measurable first.</p>
+          <p>One method runs through all four:<br>make the object measurable first.</p>
           <figure class="plate-figure">
             <img src="assets/img/plate_law.jpg"
                  alt="Parody of the Vitruvian Man holding a lute, scale bar omitted" width="688" height="688">
@@ -580,7 +580,13 @@
             function layout() {
               var bottom = prof.offsetTop + prof.offsetHeight;
               for (var i = 0; i < els.length; i++) {
-                els[i].style.top = (bottom - els[i].offsetHeight) + 'px';
+                var el = els[i];
+                var ratio = parseFloat(el.getAttribute('data-ar')) || 2.866;  /* h / w */
+                var w = bottom / ratio;
+                if (w > window.innerWidth * 0.52) { w = window.innerWidth * 0.52; }  /* 窄屏防两侧相撞 */
+                el.style.width = w + 'px';
+                el.style.height = (w * ratio) + 'px';
+                el.style.top = (bottom - w * ratio) + 'px';                          /* 底边对齐 #profile 底 */
               }
             }
             layout();
