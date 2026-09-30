@@ -199,13 +199,23 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 
 .masthead-grid {
   display: grid;
-  /* 左：姓名/学历/导语；右：头像方块（占住原来的大留白） */
-  grid-template-columns: minmax(0, 1fr) clamp(132px, 13.6vw, 196px);
+  /* 左：姓名/学历/导语；右：头像方块 + 场景立绘（竖排） */
+  grid-template-columns: minmax(0, 1fr) clamp(178px, 20.5vw, 296px);
   column-gap: clamp(26px, 4.6vw, 76px);
   align-items: start;
   margin-top: 44px;
 }
-.masthead-grid > div { max-width: 720px; }
+.masthead-grid > div { max-width: 660px; }
+.masthead-media > div { max-width: none; }
+
+/* 报头图版（立绘）：回到右列，且比原来报头里的 186px 明显放大 */
+.plate-figure img { width: 100%; height: auto; filter: grayscale(14%) saturate(.94); }
+.plate-figure .cap {
+  margin-top: 14px; padding-top: 10px; border-top: 1px solid var(--line);
+  font-family: var(--font-mono); font-size: 11.5px; line-height: 1.6;
+  letter-spacing: .08em; color: var(--ink-2);
+}
+.plate-figure .cap b { font-weight: 400; color: var(--ink-deep); }
 
 /* 正文两端对齐：按内容宽度撑满（含自动断词，避免大词距） */
 .prose, .lede, .rows .note, .entries .note {
@@ -215,10 +225,10 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   hyphens: auto;
 }
 
-/* 右列头像：见方，高度对齐"姓名 + 两行学历"那一块 */
-.masthead-face { margin: 4px 0 0; }
+/* 右列头像：见方（≥212px，至少等于"姓名 + 两行学历"那一块） */
+.masthead-face { margin: 4px 0 clamp(18px, 2.4vw, 30px); }
 .masthead-face .face {
-  width: 100%; height: auto; aspect-ratio: 1 / 1; object-fit: contain;
+  width: min(212px, 100%); height: auto; aspect-ratio: 1 / 1; object-fit: contain;
   display: block; filter: grayscale(14%) saturate(.94);
 }
 @media (max-width: 780px) {
@@ -413,9 +423,6 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 
 /* ---------- 10. 三视图图版 ---------- */
 .plates { max-width: var(--col); }
-/* 01 Profile 里的大立绘：按自然比例，宽度收窄，不占满整栏 */
-.plate-portrait { max-width: 340px; margin-bottom: clamp(26px, 3.6vw, 46px); }
-.plate-portrait img { height: auto; object-position: center; }
 .plate-strip {
   display: grid; grid-template-columns: repeat(3, 1fr);
   gap: clamp(12px, 2.2vw, 30px);
