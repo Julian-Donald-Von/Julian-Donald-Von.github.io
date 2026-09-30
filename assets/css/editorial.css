@@ -692,3 +692,66 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   width: 100%; margin-left: auto; margin-right: 0;  /* 与 Plate 01 同宽、右缘同线 */
 }
 #research .sec-note.aside > p { margin-bottom: clamp(16px, 1.8vw, 24px); }
+
+/* ---------- 18. 纸纤维（feTurbulence + feDiffuseLighting）----------
+   光照输出先均值归一(slope/intercept)再与纸色 multiply ⇒ 纸色零漂移。
+   两层不同 seed 交叉淡化 46s = 光照极缓漂移；合成器动画，不触发滤镜重算。 */
+.paper-fiber {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background: var(--bg);
+}
+.paper-fiber-a { filter: url(#paper-fiber-a); }
+.paper-fiber-b { filter: url(#paper-fiber-b); opacity: 0;
+  animation: fiber-breath 46s ease-in-out infinite; }
+@keyframes fiber-breath { 0%, 100% { opacity: 0; } 50% { opacity: 1; } }
+@media (prefers-color-scheme: dark) {
+  .paper-fiber-a { filter: url(#paper-fiber-a-dark); }
+  .paper-fiber-b { filter: url(#paper-fiber-b-dark); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .paper-fiber-b { animation: none; opacity: 0; }
+}
+@media print {
+  #gate, .paper-fiber { display: none !important; }
+}
+
+/* ---------- 19. 嘴欠门卫 ---------- */
+#gate {
+  position: fixed; inset: 0; z-index: 60;
+  display: grid; place-content: center; justify-items: center;
+  gap: clamp(28px, 4.5vh, 46px);
+  padding: 0 clamp(20px, 6vw, 80px); text-align: center;
+  color: var(--ink-deep);
+  transition: transform 700ms cubic-bezier(.77, 0, .18, 1);
+}
+#gate::before {
+  content: ""; position: absolute; inset: 0;
+  background: var(--bg);
+  filter: url(#paper-fiber-a);
+}
+@media (prefers-color-scheme: dark) {
+  #gate::before { filter: url(#paper-fiber-a-dark); }
+}
+#gate > * { position: relative; z-index: 1; margin: 0; }
+#gate.gate--open { transform: translateY(-100%); pointer-events: none; }
+#gate-line {
+  font-family: var(--font-serif); font-weight: 400;
+  font-size: clamp(2rem, 4vw, 4.5rem); line-height: 1.16;
+  max-width: 880px; text-wrap: balance;
+}
+.gate-actions { display: flex; gap: clamp(18px, 3vw, 34px); }
+.gate-btn {
+  font-family: var(--font-mono); font-size: 15px; letter-spacing: .14em;
+  padding: 10px 28px; background: transparent; color: inherit;
+  border: 1px solid var(--line-strong); border-radius: 999px;
+  cursor: pointer;
+  transition: transform .18s var(--ease), background-color .18s var(--ease);
+}
+.gate-btn:hover { background: rgb(127 127 127 / 8%); transform: translateY(-1px); }
+.gate-btn:active { transform: translateY(1px); }
+.gate-btn-stfu { border-width: 1.5px; }
+.gate-btn-stfu:hover { transform: translate(1.5px, -1.5px); }
+.gate-locked { overflow: hidden; }
+
+@media (prefers-color-scheme: dark) {
+}
