@@ -234,7 +234,8 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 .masthead-face { margin: 4px 0 clamp(18px, 2.4vw, 30px); }
 .masthead-face .face {
   width: min(212px, 100%); height: auto; aspect-ratio: 1 / 1; object-fit: contain;
-  display: block; filter: grayscale(14%) saturate(.94);
+  display: block; margin-left: auto; margin-right: 0;   /* 尺寸不变，右缘对齐立绘 */
+  filter: grayscale(14%) saturate(.94);
 }
 @media (max-width: 780px) {
   .masthead-grid { grid-template-columns: 1fr; }
@@ -639,9 +640,9 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
    绑定在 .masthead 与 #profile 内随页滚动；锚点段落负责 position:relative + isolation。 */
 .page { isolation: auto; }
 .relief-l, .relief-r {
-  position: absolute; top: 0; z-index: -1; pointer-events: none;   /* JS: 底边对齐 #profile 底 */
-  width: min(38vw, 520px);
-  height: auto;                                    /* 盒子尺寸 = 图像尺寸 ⇒ 不被裁 */
+  position: absolute; top: 0; z-index: -1; pointer-events: none;   /* JS: 高度 = 页顶→#profile 底 */
+  width: auto;                                     /* 宽度由 aspect-ratio 导出 ⇒ 盒子恒等于图像，绝不裁切 */
+  height: 120vh;                                   /* JS 覆盖；无 JS 时的兜底 */
   background-repeat: no-repeat;
   background-size: 100% 100%;
   opacity: .96;
@@ -687,4 +688,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 
 /* 07 Beyond / 02 Research 的右侧图版：与 Profile 的 aside 同宽解锁 */
 #beyond .sec-note.aside, #research .sec-note.aside { max-width: none; }
-#beyond .plate-figure, #research .plate-figure { width: 110%; margin-left: -10%; }  /* 略微放大，向列间空隙延展 34px */
+#beyond .plate-figure, #research .plate-figure {
+  width: 100%; margin-left: auto; margin-right: 0;  /* 与 Plate 01 同宽、右缘同线 */
+}
+#research .sec-note.aside > p { margin-bottom: clamp(16px, 1.8vw, 24px); }
