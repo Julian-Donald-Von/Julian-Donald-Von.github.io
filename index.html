@@ -22,7 +22,7 @@
 <meta name="twitter:image" content="https://julian-donald-von.github.io/assets/img/og.png">
 
 <link rel="stylesheet" href="assets/fonts/latin.css">
-<link rel="stylesheet" href="assets/css/editorial.css?v20260930r">
+<link rel="stylesheet" href="assets/css/editorial.css?v20260930s">
 <noscript><style>.reveal{opacity:1;transform:none}</style></noscript>
 </head>
 <body>
@@ -225,29 +225,42 @@ var lC = [`Congratulations. Your display has achieved texture.`,`What you are se
         return w <= maxW;
       };
       if (fit(text)) return text;
-      var chunks = [], buf = "";
-      for (var i = 0; i < text.length; i++) {
-        var c = text.charAt(i);
-        buf += c;
-        if (c === "," || c === ";" || c === ":" || c === "—" || c === "–") { chunks.push(buf.trim()); buf = ""; }
+      /* 分句：句号 / 逗号 / 分号 / 冒号 / 破折号 处切一片 */
+      var pieces = [], buf = "";
+      for (var p = 0; p < text.length; p++) {
+        buf += text.charAt(p);
+        if (".、，,;:—–".indexOf(text.charAt(p)) > -1) { pieces.push(buf.trim()); buf = ""; }
       }
-      if (buf.trim()) chunks.push(buf.trim());
-      var refined = [];
-      chunks.forEach(function (ch) {
-        ch.split(/\s+(?=(?:and|but|so|then|while)\s)/).forEach(function (p) {
-          if (p.trim()) refined.push(p.trim());
-        });
-      });
+      if (buf.trim()) pieces.push(buf.trim());
       var lines = [], cur = "";
-      for (var k = 0; k < refined.length; k++) {
-        var piece = refined[k];
-        if (lines.length === maxLines - 1) {
-          cur = cur ? cur + " " + refined.slice(k).join(" ") : refined.slice(k).join(" ");
+      for (var k = 0; k < pieces.length; k++) {
+        var piece = pieces[k];
+        if (lines.length === maxLines - 1) {                 /* 第三行兜底收下剩余 */
+          cur = cur ? cur + " " + pieces.slice(k).join(" ") : pieces.slice(k).join(" ");
           break;
         }
-        var trial = cur ? cur + " " + piece : piece;
-        if (!cur || fit(trial)) cur = trial;
-        else { lines.push(cur); cur = piece; }
+        if (!cur && !fit(piece) && piece.indexOf(" ") > 0) {
+          /* 整片就超宽：按空格逐词塞，装不下立刻换行 */
+          var words = piece.split(" ");
+          for (var wi = 0; wi < words.length; wi++) {
+            var wt = cur ? cur + " " + words[wi] : words[wi];
+            if (!cur || fit(wt)) cur = wt;
+            else { lines.push(cur); cur = words[wi]; }
+            if (lines.length === maxLines - 1 && wi < words.length - 1) {
+              cur += " " + words.slice(wi + 1).join(" ");
+              break;
+            }
+          }
+        } else {
+          var trial = cur ? cur + " " + piece : piece;
+          if (!cur) cur = piece;
+          else if (fit(trial)) cur = trial;                  /* 装得下就继续 */
+          else { lines.push(cur); cur = piece; }             /* 装不下果断换行 */
+        }
+        var isBreak = /[.,;:!?—–]$/.test(piece);             /* 句号/逗号后主动换行 */
+        if (isBreak && k < pieces.length - 1 && lines.length < maxLines - 1) {
+          lines.push(cur); cur = "";
+        }
       }
       if (cur) lines.push(cur);
       while (lines.length > maxLines) {
@@ -287,22 +300,23 @@ var lC = [`Congratulations. Your display has achieved texture.`,`What you are se
       var pool = far.length ? far : cands;
       return pool[Math.floor(Math.random() * pool.length)];
     }
-    function makeTypo(text, spot) {
-      var rest = text.slice(spot);
-      var m = /[A-Za-z]+/.exec(rest);
+    /* 错误必须生成在“光标所在处”：err 与 correct 都以当前位置为基准，
+       否则错误串会被追加到错位的地方，看起来像乱码而不是真人手滑 */
+    function makeTypo(text, i) {
+      var m = /[A-Za-z]+/.exec(text.slice(i));
       if (!m || m[0].length < 5) return null;
-      var w = m[0], off = Math.floor(Math.random() * (w.length - 1)), i = spot + off;
+      var w = m[0];
       var a = text.charAt(i), b = text.charAt(i + 1);
       var kinds = ["swap", "double", "adjacent", "omit", "extra"];
       var k = kinds[Math.floor(Math.random() * kinds.length)];
       var err, len = 2;
-      if (k === "swap" && /[A-Za-z]/.test(b)) err = b + a;
-      else if (k === "double") { err = a + a; len = 1; }
-      else if (k === "omit" && off + 2 < w.length) err = a + text.charAt(i + 2);
-      else if (k === "extra") { err = a + adjacent(a); len = 1; }
+      if (k === "swap" && /[A-Za-z]/.test(b)) err = b + a;                       /* research -> rseaerch */
+      else if (k === "double") { err = a + a; len = 1; }                          /* loading  -> looading */
+      else if (k === "omit" && w.length >= 3) { err = a + text.charAt(i + 2); }   /* website  -> webste  */
+      else if (k === "extra") { err = a + adjacent(a); len = 1; }                 /* screen   -> screwn */
       else { err = adjacent(a) + (/[A-Za-z]/.test(b) ? b : ""); len = /[A-Za-z]/.test(b) ? 2 : 1; }
       var correct = text.substr(i, len);
-      if (err === correct) { err = adjacent(a) + b; }
+      if (err === correct) err = adjacent(a) + (/[A-Za-z]/.test(b) ? b : "");
       return { at: i, err: err, len: len, correct: correct };
     }
     var QUIPS = ["nope.", "again?", "close enough—", "I can type.", "apparently not.",
@@ -398,11 +412,11 @@ var lC = [`Congratulations. Your display has achieved texture.`,`What you are se
           if (aborted) return;
           lineEl.textContent = lineEl.textContent.slice(0, -1);
           left--;
-          if (left > 0) later(one, 90); else then();
+          if (left > 0) later(one, 115); else then();
         })();
       }
       function put(str, then, mult) {
-        var k = 0, d = Math.max(60, (35 + Math.random() * 30) * (mult || 1.6));
+        var k = 0, d = Math.max(85, (35 + Math.random() * 30) * (mult || 2.1));
         (function one() {
           if (aborted) return;
           lineEl.textContent += str.charAt(k);
@@ -451,7 +465,7 @@ var lC = [`Congratulations. Your display has achieved texture.`,`What you are se
                   });
                 }, 170);
               });
-            }, usedTypos >= 2 ? (450 + Math.random() * 200) + 360 : 250 + Math.random() * 300);
+            }, usedTypos >= 2 ? 600 + Math.random() * 350 : 350 + Math.random() * 250);
           }, 0);
         });
       }
