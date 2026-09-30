@@ -679,3 +679,13 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
       drop-shadow(6px 8px 9px rgba(0,0,0,.22));
   }
 }
+
+/* ---------- 17. 统一纸面（用户要求：整页纸色一致，无段落色差）----------
+   实测：zone 四色 tint 叠 42% 后段落间 L 差最大 ~18（cool 偏蓝、warm 偏黄），
+   .light 光晕再叠 ±6 漂移。全部撤掉，露出同一张 --bg 纸；光晕只留一丝。 */
+.zone-ivory, .zone-cool, .zone-warm, .foot { background: transparent; }
+.light { opacity: .18; }
+@media (prefers-color-scheme: dark) {
+  .zone-ivory, .zone-cool, .zone-warm, .foot { background: transparent; }
+  .light { opacity: .06; }
+}
