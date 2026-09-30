@@ -697,7 +697,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
    光照输出先均值归一(slope/intercept)再与纸色 multiply ⇒ 纸色零漂移。
    两层不同 seed 交叉淡化 46s = 光照极缓漂移；合成器动画，不触发滤镜重算。 */
 .paper-fiber {
-  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  position: absolute; inset: 0; z-index: 0; pointer-events: none;
   background: var(--bg);
 }
 .paper-fiber-a { filter: url(#paper-fiber-a); }
@@ -733,6 +733,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   #gate::before { filter: url(#paper-fiber-a-dark); }
 }
 #gate > * { position: relative; z-index: 1; margin: 0; }
+#gate > .sr-only { position: absolute; margin: -1px; }
 #gate.gate--open { transform: translateY(-100%); pointer-events: none; }
 #gate-line {
   font-family: var(--font-serif); font-weight: 400;
@@ -747,7 +748,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   gap: clamp(12px, 1.6vh, 18px);
 }
 .gate-actions .gate-btn {
-  opacity: 0; transform: translateY(5px);
+  opacity: 1; transform: none;
   transition: opacity .3s var(--ease), transform .3s var(--ease);
 }
 .gate-actions--on #gate-stfu, .gate-actions--both #gate-ok { opacity: 1; transform: none; }
@@ -785,16 +786,6 @@ html { background: var(--bg); }
   #gate { background: var(--bg); }
 }
 
-/* ★ 纸面跟随鼠标：位移视差（inset 外扩留出位移余量，不露边） */
-.paper-fiber { inset: -32px; }
-.paper-fiber-a, .paper-fiber-b {
-  transition: transform 420ms cubic-bezier(.22, .61, .36, 1);
-  will-change: transform;
-}
-@media (prefers-reduced-motion: reduce) {
-  .paper-fiber-a, .paper-fiber-b { transition: none; }
-}
-
 /* 22. 打字机无障碍 + 光标闪烁 + reduced-motion 退出 */
 .sr-only {
   position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0;
@@ -803,4 +794,65 @@ html { background: var(--bg); }
 #gate-line.caret-flash::after { animation-duration: .18s; }
 @media (prefers-reduced-motion: reduce) {
   #gate { transition: none; }
+  #gate.gate--open { transform: none; visibility: hidden; }
+  .gate-btn, .gate-actions .gate-btn { transition: none; }
+  .gate-btn:hover, .gate-btn:active, .gate-btn-stfu:hover { transform: none; }
 }
+
+.stfu-counter {
+  position: fixed; top: 14px; right: 20px; z-index: 61;
+  max-width: calc(100vw - 40px); text-align: right;
+  font-family: var(--font-mono); font-size: 11px;
+  color: var(--ink-deep); background: var(--bg);
+  padding: 3px 5px;
+}
+@media print { .stfu-counter { display: none; } }
+
+
+/* Paper palettes share the existing ink, typography and section hierarchy. */
+:root {
+  --paper-original: #f6f4ee; --paper-sage: #edf1e9; --paper-blue: #eaf0f2;
+  --paper-rose: #f3ecec; --paper-sand: #f2ece2;
+}
+:root[data-paper="sage"] { --bg: var(--paper-sage); }
+:root[data-paper="blue"] { --bg: var(--paper-blue); }
+:root[data-paper="rose"] { --bg: var(--paper-rose); }
+:root[data-paper="sand"] { --bg: var(--paper-sand); }
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper-original: #222523; --paper-sage: #222a25; --paper-blue: #22282e;
+    --paper-rose: #2c2428; --paper-sand: #2c2822;
+  }
+}
+body { position: relative; }
+/* Repeating, pre-sized SVG tiles scroll naturally with the document.
+   No whole-page SVG filter surface or wheel-event animation is needed. */
+.paper-fiber {
+  filter: none; background-blend-mode: multiply;
+  background-image: url("../img/paper-a-light.svg");
+  background-size: 512px 512px;
+}
+.paper-fiber-b { background-image: url("../img/paper-b-light.svg"); }
+@media (prefers-color-scheme: dark) {
+  .paper-fiber-a { filter: none; background-image: url("../img/paper-a-dark.svg"); }
+  .paper-fiber-b { filter: none; background-image: url("../img/paper-b-dark.svg"); }
+}
+.paper-picker-rail { display: flex; align-items: center; gap: 12px; flex: 1 1 180px; align-self: center; }
+.paper-picker-rail .sep { min-width: 16px; }
+.paper-picker { display: flex; gap: 2px; flex: none; }
+.paper-picker button { width: 28px; height: 28px; padding: 6px; position: relative; }
+.paper-picker button::before {
+  content: ""; display: block; width: 16px; height: 16px;
+  background: var(--swatch); border: 1px solid var(--line-strong); border-radius: 2px;
+}
+.paper-picker button[aria-pressed="true"]::after {
+  content: ""; position: absolute; bottom: 1px; left: 10px; right: 10px;
+  height: 2px; background: var(--ink-deep);
+}
+.paper-picker button:focus-visible { outline: 1px solid var(--ink-deep); outline-offset: 1px; }
+[data-paper="original"] { --swatch: var(--paper-original); }
+[data-paper="sage"] { --swatch: var(--paper-sage); }
+[data-paper="blue"] { --swatch: var(--paper-blue); }
+[data-paper="rose"] { --swatch: var(--paper-rose); }
+[data-paper="sand"] { --swatch: var(--paper-sand); }
+@media print { .paper-picker { display: none; } }

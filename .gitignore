@@ -1,0 +1,5 @@
+counter/wrangler.toml
+counter/.dev.vars*
+counter/.env*
+counter/.wrangler/
+node_modules/
