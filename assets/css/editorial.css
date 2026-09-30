@@ -103,15 +103,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 .tnum { font-variant-numeric: tabular-nums; }
 
 /* ---------- 3. 纸面：80px 网格 + 轴线 + 漫射光 + 噪点 ---------- */
-.paper-grid {
-  position: fixed; inset: 0; z-index: 0; pointer-events: none;
-  background-image:
-    linear-gradient(to right,  var(--grid-major) 1px, transparent 1px),
-    linear-gradient(to bottom, var(--grid-major) 1px, transparent 1px),
-    linear-gradient(to right,  var(--grid-minor) 1px, transparent 1px),
-    linear-gradient(to bottom, var(--grid-minor) 1px, transparent 1px);
-  background-size: 320px 320px, 320px 320px, 80px 80px, 80px 80px;
-}
+/* .paper-grid 已撤（用户要求：不要不随滚动走的方格纹路） */
 
 /* 美浓烧浮雕底纹：稀疏印花 + 高光/暗影双边，只有靠近看才察觉 */
 
