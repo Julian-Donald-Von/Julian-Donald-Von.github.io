@@ -645,9 +645,9 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 
 /* ---------- 16. 陶瓷樱花侧幅（同色浅浮雕：美浓烧/清水烧）----------
    绑定在 .masthead 与 #profile 内随页滚动；锚点段落负责 position:relative + isolation。 */
-.masthead, #profile { position: relative; isolation: isolate; }
+.page { isolation: auto; }
 .relief-l, .relief-r {
-  position: absolute; top: 0; bottom: 0; z-index: -1; pointer-events: none;
+  position: absolute; top: 0; height: 120vh; z-index: -1;  /* JS: 实测 span 后覆盖 */ pointer-events: none;
   width: min(38vw, 560px);
   background-repeat: no-repeat;
   background-size: auto 100%;
