@@ -22,7 +22,7 @@
 <meta name="twitter:image" content="https://julian-donald-von.github.io/assets/img/og.png">
 
 <link rel="stylesheet" href="assets/fonts/latin.css">
-<link rel="stylesheet" href="assets/css/editorial.css?v20260930s">
+<link rel="stylesheet" href="assets/css/editorial.css?v20260930t">
 <noscript><style>.reveal{opacity:1;transform:none}</style></noscript>
 </head>
 <body>
@@ -229,7 +229,13 @@ var lC = [`Congratulations. Your display has achieved texture.`,`What you are se
       var pieces = [], buf = "";
       for (var p = 0; p < text.length; p++) {
         buf += text.charAt(p);
-        if (".、，,;:—–".indexOf(text.charAt(p)) > -1) { pieces.push(buf.trim()); buf = ""; }
+        if (".、，,;:—–".indexOf(text.charAt(p)) > -1) {
+          /* 句号/逗号后的闭合引号要跟着走，否则 ” 会单独成片并被换到新的一行 */
+          var q = p + 1;
+          while (q < text.length && /[”’"')]/.test(text.charAt(q))) { buf += text.charAt(q); q++; }
+          p = q - 1;
+          pieces.push(buf.trim()); buf = "";
+        }
       }
       if (buf.trim()) pieces.push(buf.trim());
       var lines = [], cur = "";
@@ -263,6 +269,9 @@ var lC = [`Congratulations. Your display has achieved texture.`,`What you are se
         }
       }
       if (cur) lines.push(cur);
+      var clean = [];
+      for (var cl = 0; cl < lines.length; cl++) { if (lines[cl].trim()) clean.push(lines[cl].trim()); }
+      lines = clean;
       while (lines.length > maxLines) {
         lines[maxLines - 1] = lines[maxLines - 1] + " " + lines.splice(maxLines, 1)[0];
       }
