@@ -22,7 +22,7 @@
 <meta name="twitter:image" content="https://julian-donald-von.github.io/assets/img/og.png">
 
 <link rel="stylesheet" href="assets/fonts/latin.css">
-<link rel="stylesheet" href="assets/css/editorial.css?v20260930w">
+<link rel="stylesheet" href="assets/css/editorial.css?v20260930x">
 <noscript><style>.reveal{opacity:1;transform:none}</style></noscript>
 </head>
 <body>
@@ -333,26 +333,23 @@ var lC = [`Congratulations. Your display has achieved texture.`,`What you are se
       if (err === correct) err = b + a;
       return { at: i, err: err, len: 2, correct: correct };
     }
-    var QUIPS = ["nope.", "again?", "close enough—", "I can type.", "apparently not.",
-                 "one more time.", "let’s pretend that didn’t happen.", "you saw nothing."];
-    var QUIPCUR = "gate.quip.v2";
-    function nextQuip() {
-      var i = 0;
-      try { i = parseInt(localStorage.getItem(QUIPCUR) || "0", 10); } catch (e) { i = 0; }
-      if (isNaN(i) || i < 0) i = 0;
-      var q = QUIPS[i % QUIPS.length];
-      try { localStorage.setItem(QUIPCUR, String((i + 1) % QUIPS.length)); } catch (e) {}
-      return q;
-    }
-    /* 彩蛋依次排序：rare quips 按列表顺序出现，走完一轮再从头（不随机、不重复） */
-    var QUIPCUR = "gate.quip.v1";
-    function nextQuip() {
-      var i = 0;
-      try { i = parseInt(localStorage.getItem(QUIPCUR) || "0", 10); } catch (e) { i = 0; }
-      if (isNaN(i) || i < 0) i = 0;
-      var q = QUIPS[i % QUIPS.length];
-      try { localStorage.setItem(QUIPCUR, String((i + 1) % QUIPS.length)); } catch (e) {}
-      return q;
+    /* 破防后的自言自语：整池随机抽一句（…damn / …shit 只是其中两个，不是必然） */
+    var BURST = ["…damn", "…shit", "nope.", "again?", "close enough—", "I can type.",
+                 "apparently not.", "one more time.", "let’s pretend that didn’t happen.",
+                 "you saw nothing."];
+    function pickBurst() {
+      var swearOk = ss("gate.swear") !== "1";
+      var damnOk = ss("gate.damn") !== "1";
+      var pool = BURST.filter(function (p) {
+        if (p === "…shit") return swearOk;      /* 粗口一个 session 各最多一次 */
+        if (p === "…damn") return damnOk;
+        return true;
+      });
+      if (!pool.length) pool = BURST.slice(3);
+      var phrase = pool[Math.floor(Math.random() * pool.length)];
+      if (phrase === "…damn") ss("gate.damn", "1");
+      if (phrase === "…shit") ss("gate.swear", "1");
+      return phrase;
     }
 
     function rollMood() {
@@ -362,15 +359,12 @@ var lC = [`Congratulations. Your display has achieved texture.`,`What you are se
       /* 非破防情况至多错一次；只有破防档才会连错（damn / shit 的因果链） */
       if (r < 0.70) return { typos: 0, frust: null };                            /* 70% 完全正常 */
       if (r < 0.97) return { typos: 1, frust: null };                            /* 27% 只错一次 */
-      if (r < 0.99) {                                                            /*  2% ...damn */
-        return { typos: 2 + (Math.random() < 0.5 ? 1 : 0),
-                 frust: damnUsed ? null : (Math.random() < 0.35 ? "quip" : "damn") };
+      if (r < 0.99) {                                                            /*  2% 破防 */
+        return { typos: 2 + (Math.random() < 0.5 ? 1 : 0), frust: "burst" };
       }
-      /* 1% 档里再分出最低概率的 Whatever. 彩蛋（文档：打错→不删→打 Whatever.→一起删掉重来） */
+      /* 最低概率档：摆烂（删掉后整句瞬显），另有更隐蔽的 Whatever. 变体 */
       var last = Math.random();
-      return { typos: 3, frust: swearUsed ? (damnUsed ? null : "damn")
-                                         : (last < 0.2 ? "whatever"
-                                            : last < 0.5 ? "quip" : "shit") };
+      return { typos: 3, frust: (last < 0.18 && !swearUsed) ? "whatever" : "giveup" };
     }
 
     /* 节奏：普通 35-65ms；空格后偶停；逗号 80-140；句号 120-220；破折号 120-250 */
@@ -446,16 +440,14 @@ var lC = [`Congratulations. Your display has achieved texture.`,`What you are se
       function frust(then) {
         frustDone = true;
         var kind = mood.frust;
-        var phrase = kind === "damn" ? "…damn" : kind === "shit" ? "…shit" : nextQuip();
-        if (kind === "damn") ss("gate.damn", "1");
-        if (kind === "shit") ss("gate.swear", "1");
-        swearing = (kind === "damn" || kind === "shit");
+        var phrase = (kind === "whatever") ? "Whatever." : pickBurst();
+        swearing = (phrase === "…damn" || phrase === "…shit");
         put(phrase, function () {
           later(function () {
             erase(phrase.length, function () {
               swearing = false;
               later(function () {
-                if (kind === "shit") {                 /* 放弃手打：剩下的直接贴上去 */
+                if (kind === "giveup") {               /* 摆烂：放弃手打，剩下的直接贴上去 */
                   lineEl.textContent = "";
                   later(finish, 110);
                   return;
@@ -463,7 +455,7 @@ var lC = [`Congratulations. Your display has achieved texture.`,`What you are se
                 then();
               }, 150 + Math.random() * 150);
             });
-          }, kind === "shit" ? 700 + Math.random() * 400 : 500 + Math.random() * 400);
+          }, kind === "giveup" ? 700 + Math.random() * 400 : 500 + Math.random() * 400);
         });
       }
       function runTypo(spot, then) {
