@@ -22,7 +22,7 @@
 <meta name="twitter:image" content="https://julian-donald-von.github.io/assets/img/og.png">
 
 <link rel="stylesheet" href="assets/fonts/latin.css">
-<link rel="stylesheet" href="assets/css/editorial.css?v20260930l">
+<link rel="stylesheet" href="assets/css/editorial.css?v20260930m">
 <noscript><style>.reveal{opacity:1;transform:none}</style></noscript>
 </head>
 <body>
@@ -88,9 +88,9 @@
         </figure>
         <script>
           (function () {
-            var i = Math.floor(Math.random() * 8) + 1;
+            var i = Math.floor(Math.random() * 59) + 1;
             document.currentScript.previousElementSibling.querySelector('img.face')
-              .src = 'assets/img/avatar_r' + i + '.png';
+              .src = 'assets/img/avatar_r' + i + '.webp';
           })();
         </script>
       </div>
@@ -589,11 +589,22 @@
                 el.style.top = (bottom - w * ratio) + 'px';                          /* 底边对齐 #profile 底 */
               }
             }
-            layout();
-            window.addEventListener('load', layout);
-            window.addEventListener('resize', layout);
+            function layoutAll() { layout(); alignPlate02(); }
+            layoutAll();
+            window.addEventListener('load', layoutAll);
+            window.addEventListener('resize', layoutAll);
             if (document.fonts && document.fonts.ready) { document.fonts.ready.then(layout); }
-          })();
+                      /* Plate 02 顶边与 02 Research 第一条 row 的上横线对齐（实测，随窗口自适应） */
+            function alignPlate02() {
+              var row = document.querySelector('#research .rows .row');
+              var fig = document.querySelector('#research .plate-figure');
+              if (!row || !fig) return;
+              var cur = parseFloat(fig.style.marginTop) || 0;
+              fig.style.marginTop = (cur + (row.getBoundingClientRect().top
+                                            - fig.getBoundingClientRect().top)) + 'px';
+            }
+
+})();
         </script>
 </body>
 </html>
