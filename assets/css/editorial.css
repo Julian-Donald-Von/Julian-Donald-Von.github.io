@@ -737,7 +737,8 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 #gate-line {
   font-family: var(--font-serif); font-weight: 400;
   font-size: clamp(2rem, 4vw, 4.5rem); line-height: 1.16;
-  max-width: 880px; text-wrap: balance;
+  max-width: min(1200px, 92vw); white-space: pre-wrap; text-wrap: pretty;
+  line-height: 1.22;
 }
 .gate-actions {
   display: flex; flex-direction: column; align-items: center;
