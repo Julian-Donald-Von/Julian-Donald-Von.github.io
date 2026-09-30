@@ -25,3 +25,11 @@ For lines with an eligible English word of at least five letters: 70% normal; 20
 Headless Microsoft Edge also exercised normal, damn, shit, Whatever, mobile repeated-error, and reduced-motion paths using fake time and deterministic randomness supplied by the test environment. Final text, event visibility, no page errors, button visibility, viewport fit, and dismissal passed in all six scenarios. Light and dark desktop screenshots and a 375px mobile screenshot were visually inspected. Production has no forced-event query parameters or debug hooks.
 
 The counter service was tested with a simulated D1 binding; it has not been deployed or verified against a live Cloudflare account. See [deployment instructions](../counter/README.md). Until an endpoint is configured, the page displays an unavailable status and never invents a total.
+
+## Paper palette and scrolling follow-up
+
+The top masthead rule now holds five accessible color buttons: original, sage, mist blue, dusty rose and warm sand. Each has light and dark variants driven by the existing system color-scheme preference. The choice persists across refreshes; storage failure leaves selection usable. Active buttons expose `aria-pressed` and retain a visible keyboard focus outline.
+
+Paper fibers now use seamless 512px SVG tiles in document-positioned layers. The texture scrolls with page content and the existing sakura relief, with no mouse parallax or scroll-event animation. Existing light/dark fiber lighting, two-seed crossfade, print suppression and reduced-motion treatment are preserved. Tiling avoids filtering one enormous document-sized bitmap. The background color also applies to the entrance curtain.
+
+Browser verification passed for all five colors in both light and dark modes at 1280px and 375px, including persistence, adapting the same selection to a system theme change, no horizontal overflow, and paper movement matching a 450px document scroll. Screenshots were visually inspected. All 15 existing automated tests and six splash browser scenarios still pass.

@@ -22,7 +22,7 @@
 <meta name="twitter:image" content="https://julian-donald-von.github.io/assets/img/og.png">
 
 <link rel="stylesheet" href="assets/fonts/latin.css">
-<link rel="stylesheet" href="assets/css/editorial.css?v20260930x">
+<link rel="stylesheet" href="assets/css/editorial.css?v20260930palette1">
 <noscript><style>.reveal{opacity:1;transform:none}</style></noscript>
 </head>
 <body>
@@ -125,6 +125,7 @@
   </div>
 </div>
 <noscript><style>#gate{display:none}</style></noscript>
+<script src="assets/js/paper-palette.js"></script>
 <script src="assets/js/stfu-config.js"></script>
 <script src="assets/js/stfu-counter.js"></script>
 <script>
@@ -551,28 +552,7 @@ var lC = [`Congratulations. Your display has achieved texture.`,`What you are se
       }
     });
 
-    /* ---- 纸面跟随鼠标：位移视差（不改光照 ⇒ 纸色恒定） ---- */
-    (function () {
-      var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      if (reduce) return;
-      var fibers = document.querySelectorAll(".paper-fiber");
-      var amp = 26;                     /* 最大位移 px */
-      var raf = 0, tx = 0, ty = 0;
-      function apply() {
-        raf = 0;
-        for (var i = 0; i < fibers.length; i++) {
-          var depth = (fibers[i].className.indexOf("paper-fiber-b") > -1) ? 1.6 : 1;
-          fibers[i].style.transform = "translate3d(" + (tx * depth).toFixed(1) + "px," +
-                                      (ty * depth).toFixed(1) + "px,0)";
-        }
-      }
-      function onMove(e) {
-        tx = (e.clientX / window.innerWidth - 0.5) * -2 * amp;
-        ty = (e.clientY / window.innerHeight - 0.5) * -2 * amp;
-        if (!raf) raf = window.requestAnimationFrame(apply);
-      }
-      window.addEventListener("pointermove", onMove, { passive: true });
-    })();
+
   })();
 </script>
 
@@ -593,7 +573,17 @@ var lC = [`Congratulations. Your display has achieved texture.`,`What you are se
         <span>Changchun, Jilin, China</span>
         <span aria-hidden="true">·</span>
         <span class="tnum">2026</span>
-        <span class="sep" aria-hidden="true"></span>
+        <div class="paper-picker-rail">
+          <span class="sep" aria-hidden="true"></span>
+          <div class="paper-picker" role="group" aria-label="Paper background color">
+            <button type="button" data-paper="original" aria-label="Original paper" aria-pressed="true" title="Original paper"></button>
+            <button type="button" data-paper="sage" aria-label="Sage paper" aria-pressed="false" title="Sage paper"></button>
+            <button type="button" data-paper="blue" aria-label="Mist blue paper" aria-pressed="false" title="Mist blue paper"></button>
+            <button type="button" data-paper="rose" aria-label="Dusty rose paper" aria-pressed="false" title="Dusty rose paper"></button>
+            <button type="button" data-paper="sand" aria-label="Warm sand paper" aria-pressed="false" title="Warm sand paper"></button>
+          </div>
+          <span class="sep" aria-hidden="true"></span>
+        </div>
         <span>No. 01</span>
       </div>
 
