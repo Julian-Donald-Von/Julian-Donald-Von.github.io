@@ -199,14 +199,13 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 
 .masthead-grid {
   display: grid;
-  /* 左：姓名/学历/导语；右：头像方块 + 场景立绘（竖排） */
-  grid-template-columns: minmax(0, 1fr) clamp(178px, 20.5vw, 296px);
+  /* 左：姓名/学历/导语；右：头像方块（立绘在 01 Profile 右栏） */
+  grid-template-columns: minmax(0, 1fr) clamp(150px, 15vw, 212px);
   column-gap: clamp(26px, 4.6vw, 76px);
   align-items: start;
   margin-top: 44px;
 }
-.masthead-grid > div { max-width: 660px; }
-.masthead-media > div { max-width: none; }
+.masthead-grid > div { max-width: 720px; }
 
 /* 报头图版（立绘）：回到右列，且比原来报头里的 186px 明显放大 */
 .plate-figure img { width: 100%; height: auto; filter: grayscale(14%) saturate(.94); }
@@ -216,6 +215,13 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   letter-spacing: .08em; color: var(--ink-2);
 }
 .plate-figure .cap b { font-weight: 400; color: var(--ink-deep); }
+/* 01 Profile：正文栏收窄到 640，把右栏让宽给立绘（否则右栏只有 ~240px，立绘放不大） */
+#profile .grid { grid-template-columns: var(--rail) minmax(0, 640px) minmax(0, 1fr); }
+
+/* 01 Profile 右栏（.sec-note）里的立绘：占满该栏，在 Field/Languages 之上。
+   ★ `.aside` 自带 max-width:240px，不解开的话立绘永远只有 240 宽 —— 实测踩过。 */
+#profile .sec-note.aside { max-width: none; }
+.sec-note .plate-figure { margin: 0 0 clamp(24px, 3.2vw, 38px); }
 
 /* 正文两端对齐：按内容宽度撑满（含自动断词，避免大词距） */
 .prose, .lede, .rows .note, .entries .note {
