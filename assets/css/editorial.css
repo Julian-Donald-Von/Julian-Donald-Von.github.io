@@ -220,7 +220,8 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 /* 01 Profile 右栏（.sec-note）里的立绘：占满该栏，在 Field/Languages 之上。
    ★ `.aside` 自带 max-width:240px，不解开的话立绘永远只有 240 宽 —— 实测踩过。 */
 #profile .sec-note.aside { max-width: none; }
-.sec-note .plate-figure { margin: 0 0 clamp(24px, 3.2vw, 38px); }
+.sec-note .plate-figure { margin: 0 0 clamp(24px, 3.2vw, 38px) 8px; }   /* 右移 8px：对齐头像的可见左边缘；宽度同时减去 8px，右边不出血 */
+.sec-note .plate-figure img { width: calc(100% - 8px); }
 
 /* 正文两端对齐：按内容宽度撑满（含自动断词，避免大词距） */
 .prose, .lede, .rows .note, .entries .note {
@@ -231,7 +232,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 }
 
 /* 右列头像：见方（≥212px，至少等于"姓名 + 两行学历"那一块） */
-.masthead-face { margin: 4px 0 clamp(18px, 2.4vw, 30px); }
+.masthead-face { margin: -11px 0 clamp(18px, 2.4vw, 30px); }   /* 上移 15px：让头发顶对齐姓名顶（贴纸白描边在纸上看不见，按可见边算） */
 .masthead-face .face {
   width: 100%; height: auto; aspect-ratio: 1 / 1; object-fit: contain;
   display: block; filter: grayscale(14%) saturate(.94);
