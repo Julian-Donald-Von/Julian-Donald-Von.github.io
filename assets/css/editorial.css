@@ -113,6 +113,14 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   background-size: 320px 320px, 320px 320px, 80px 80px, 80px 80px;
 }
 
+/* 美浓烧浮雕底纹：稀疏印花 + 高光/暗影双边，只有靠近看才察觉 */
+.relief {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%27400%27%20height%3D%27400%27%3E%3Cg%20fill%3D%27none%27%20stroke%3D%27rgb%28255%2C255%2C255%29%27%20stroke-opacity%3D%27.95%27%20stroke-width%3D%271.45%27%20transform%3D%27translate%2899.1%2C99.1%29%27%3E%3Ccircle%20cx%3D%270%27%20cy%3D%270%27%20r%3D%2713.6%27%2F%3E%3Ccircle%20cx%3D%278.49%27%20cy%3D%27-4.90%27%20r%3D%274.5%27%2F%3E%3Ccircle%20cx%3D%270.00%27%20cy%3D%27-9.80%27%20r%3D%274.5%27%2F%3E%3Ccircle%20cx%3D%27-8.49%27%20cy%3D%27-4.90%27%20r%3D%274.5%27%2F%3E%3Ccircle%20cx%3D%27-8.49%27%20cy%3D%274.90%27%20r%3D%274.5%27%2F%3E%3Ccircle%20cx%3D%27-0.00%27%20cy%3D%279.80%27%20r%3D%274.5%27%2F%3E%3Ccircle%20cx%3D%278.49%27%20cy%3D%274.90%27%20r%3D%274.5%27%2F%3E%3C%2Fg%3E%3Cg%20fill%3D%27none%27%20stroke%3D%27rgb%2870%2C62%2C50%29%27%20stroke-opacity%3D%27.105%27%20stroke-width%3D%271.45%27%20transform%3D%27translate%28100.9%2C100.9%29%27%3E%3Ccircle%20cx%3D%270%27%20cy%3D%270%27%20r%3D%2713.6%27%2F%3E%3Ccircle%20cx%3D%278.49%27%20cy%3D%27-4.90%27%20r%3D%274.5%27%2F%3E%3Ccircle%20cx%3D%270.00%27%20cy%3D%27-9.80%27%20r%3D%274.5%27%2F%3E%3Ccircle%20cx%3D%27-8.49%27%20cy%3D%27-4.90%27%20r%3D%274.5%27%2F%3E%3Ccircle%20cx%3D%27-8.49%27%20cy%3D%274.90%27%20r%3D%274.5%27%2F%3E%3Ccircle%20cx%3D%27-0.00%27%20cy%3D%279.80%27%20r%3D%274.5%27%2F%3E%3Ccircle%20cx%3D%278.49%27%20cy%3D%274.90%27%20r%3D%274.5%27%2F%3E%3C%2Fg%3E%3Cg%20fill%3D%27none%27%20stroke%3D%27rgb%28255%2C255%2C255%29%27%20stroke-opacity%3D%27.95%27%20stroke-width%3D%271.45%27%20transform%3D%27translate%28299.1%2C299.1%29%27%3E%3Ccircle%20cx%3D%270%27%20cy%3D%270%27%20r%3D%2713.6%27%2F%3E%3Ccircle%20cx%3D%278.49%27%20cy%3D%27-4.90%27%20r%3D%274.5%27%2F%3E%3Ccircle%20cx%3D%270.00%27%20cy%3D%27-9.80%27%20r%3D%274.5%27%2F%3E%3Ccircle%20cx%3D%27-8.49%27%20cy%3D%27-4.90%27%20r%3D%274.5%27%2F%3E%3Ccircle%20cx%3D%27-8.49%27%20cy%3D%274.90%27%20r%3D%274.5%27%2F%3E%3Ccircle%20cx%3D%27-0.00%27%20cy%3D%279.80%27%20r%3D%274.5%27%2F%3E%3Ccircle%20cx%3D%278.49%27%20cy%3D%274.90%27%20r%3D%274.5%27%2F%3E%3C%2Fg%3E%3Cg%20fill%3D%27none%27%20stroke%3D%27rgb%2870%2C62%2C50%29%27%20stroke-opacity%3D%27.105%27%20stroke-width%3D%271.45%27%20transform%3D%27translate%28300.9%2C300.9%29%27%3E%3Ccircle%20cx%3D%270%27%20cy%3D%270%27%20r%3D%2713.6%27%2F%3E%3Ccircle%20cx%3D%278.49%27%20cy%3D%27-4.90%27%20r%3D%274.5%27%2F%3E%3Ccircle%20cx%3D%270.00%27%20cy%3D%27-9.80%27%20r%3D%274.5%27%2F%3E%3Ccircle%20cx%3D%27-8.49%27%20cy%3D%27-4.90%27%20r%3D%274.5%27%2F%3E%3Ccircle%20cx%3D%27-8.49%27%20cy%3D%274.90%27%20r%3D%274.5%27%2F%3E%3Ccircle%20cx%3D%27-0.00%27%20cy%3D%279.80%27%20r%3D%274.5%27%2F%3E%3Ccircle%20cx%3D%278.49%27%20cy%3D%274.90%27%20r%3D%274.5%27%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");
+  background-size: 400px 400px;
+  background-repeat: repeat;
+}
+
 .light {
   position: fixed; inset: -18% -8%; z-index: 1; pointer-events: none;
   background:
@@ -168,9 +176,9 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 }
 
 /* 大面积色域变化区分区块 */
-.zone-ivory { background: var(--bg); }
-.zone-cool  { background: var(--bg-cool); }
-.zone-warm  { background: var(--bg-warm); }
+.zone-ivory { background: rgb(242 240 234 / 42%); }
+.zone-cool  { background: rgb(230 238 244 / 42%); }
+.zone-warm  { background: rgb(240 233 224 / 42%); }
 
 /* ---------- 5. 报头 ---------- */
 .masthead { padding: clamp(56px, 9vh, 118px) 0 clamp(40px, 6vh, 72px); }
@@ -426,7 +434,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 
 /* ---------- 11. 页脚 ---------- */
 .foot {
-  background: var(--bg-foot);
+  background: rgb(216 211 203 / 42%);
   border-top: 1px solid var(--line);
   padding: clamp(80px, 12vh, 140px) 0 clamp(56px, 8vh, 80px);
 }
@@ -591,4 +599,15 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   .light, .grain, .paper-grid, .langbar, .axis, .viewer-bar { display: none; }
   body { background: #fff; font-size: 10.5pt; color: #000; }
   .sec { background: none !important; break-inside: avoid; }
+}
+
+/* ---------- 深色覆盖（必须放文件末尾）----------
+   .zone-* / .foot 的浅色规则在本文件后半段，同特异性时后写者胜；
+   深色覆盖若写在前面会被静默盖掉 —— 实测踩过：深色背景被抬到 L≈121 而非 32。 */
+@media (prefers-color-scheme: dark) {
+  .zone-ivory { background: rgb(30 33 31 / 42%); }
+  .zone-cool  { background: rgb(28 33 43 / 42%); }
+  .zone-warm  { background: rgb(37 31 26 / 42%); }
+  .foot { background: rgb(18 21 19 / 42%); }
+  .relief { background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%27400%27%20height%3D%27400%27%3E%3Cg%20fill%3D%27none%27%20stroke%3D%27rgb%28255%2C250%2C240%29%27%20stroke-opacity%3D%27.07%27%20stroke-width%3D%271.45%27%20transform%3D%27translate%2899.1%2C99.1%29%27%3E%3Ccircle%20cx%3D%270%27%20cy%3D%270%27%20r%3D%2713.6%27%2F%3E%3Ccircle%20cx%3D%278.49%27%20cy%3D%27-4.90%27%20r%3D%274.5%27%2F%3E%3Ccircle%20cx%3D%270.00%27%20cy%3D%27-9.80%27%20r%3D%274.5%27%2F%3E%3Ccircle%20cx%3D%27-8.49%27%20cy%3D%27-4.90%27%20r%3D%274.5%27%2F%3E%3Ccircle%20cx%3D%27-8.49%27%20cy%3D%274.90%27%20r%3D%274.5%27%2F%3E%3Ccircle%20cx%3D%27-0.00%27%20cy%3D%279.80%27%20r%3D%274.5%27%2F%3E%3Ccircle%20cx%3D%278.49%27%20cy%3D%274.90%27%20r%3D%274.5%27%2F%3E%3C%2Fg%3E%3Cg%20fill%3D%27none%27%20stroke%3D%27rgb%280%2C0%2C0%29%27%20stroke-opacity%3D%27.28%27%20stroke-width%3D%271.45%27%20transform%3D%27translate%28100.9%2C100.9%29%27%3E%3Ccircle%20cx%3D%270%27%20cy%3D%270%27%20r%3D%2713.6%27%2F%3E%3Ccircle%20cx%3D%278.49%27%20cy%3D%27-4.90%27%20r%3D%274.5%27%2F%3E%3Ccircle%20cx%3D%270.00%27%20cy%3D%27-9.80%27%20r%3D%274.5%27%2F%3E%3Ccircle%20cx%3D%27-8.49%27%20cy%3D%27-4.90%27%20r%3D%274.5%27%2F%3E%3Ccircle%20cx%3D%27-8.49%27%20cy%3D%274.90%27%20r%3D%274.5%27%2F%3E%3Ccircle%20cx%3D%27-0.00%27%20cy%3D%279.80%27%20r%3D%274.5%27%2F%3E%3Ccircle%20cx%3D%278.49%27%20cy%3D%274.90%27%20r%3D%274.5%27%2F%3E%3C%2Fg%3E%3Cg%20fill%3D%27none%27%20stroke%3D%27rgb%28255%2C250%2C240%29%27%20stroke-opacity%3D%27.07%27%20stroke-width%3D%271.45%27%20transform%3D%27translate%28299.1%2C299.1%29%27%3E%3Ccircle%20cx%3D%270%27%20cy%3D%270%27%20r%3D%2713.6%27%2F%3E%3Ccircle%20cx%3D%278.49%27%20cy%3D%27-4.90%27%20r%3D%274.5%27%2F%3E%3Ccircle%20cx%3D%270.00%27%20cy%3D%27-9.80%27%20r%3D%274.5%27%2F%3E%3Ccircle%20cx%3D%27-8.49%27%20cy%3D%27-4.90%27%20r%3D%274.5%27%2F%3E%3Ccircle%20cx%3D%27-8.49%27%20cy%3D%274.90%27%20r%3D%274.5%27%2F%3E%3Ccircle%20cx%3D%27-0.00%27%20cy%3D%279.80%27%20r%3D%274.5%27%2F%3E%3Ccircle%20cx%3D%278.49%27%20cy%3D%274.90%27%20r%3D%274.5%27%2F%3E%3C%2Fg%3E%3Cg%20fill%3D%27none%27%20stroke%3D%27rgb%280%2C0%2C0%29%27%20stroke-opacity%3D%27.28%27%20stroke-width%3D%271.45%27%20transform%3D%27translate%28300.9%2C300.9%29%27%3E%3Ccircle%20cx%3D%270%27%20cy%3D%270%27%20r%3D%2713.6%27%2F%3E%3Ccircle%20cx%3D%278.49%27%20cy%3D%27-4.90%27%20r%3D%274.5%27%2F%3E%3Ccircle%20cx%3D%270.00%27%20cy%3D%27-9.80%27%20r%3D%274.5%27%2F%3E%3Ccircle%20cx%3D%27-8.49%27%20cy%3D%27-4.90%27%20r%3D%274.5%27%2F%3E%3Ccircle%20cx%3D%27-8.49%27%20cy%3D%274.90%27%20r%3D%274.5%27%2F%3E%3Ccircle%20cx%3D%27-0.00%27%20cy%3D%279.80%27%20r%3D%274.5%27%2F%3E%3Ccircle%20cx%3D%278.49%27%20cy%3D%274.90%27%20r%3D%274.5%27%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E"); }
 }
