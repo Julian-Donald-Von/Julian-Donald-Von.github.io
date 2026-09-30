@@ -792,3 +792,13 @@ html { background: var(--bg); }
 @media (prefers-reduced-motion: reduce) {
   .paper-fiber-a, .paper-fiber-b { transition: none; }
 }
+
+/* 22. 打字机无障碍 + 光标闪烁 + reduced-motion 退出 */
+.sr-only {
+  position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+#gate-line.caret-flash::after { animation-duration: .18s; }
+@media (prefers-reduced-motion: reduce) {
+  #gate { transition: none; }
+}
