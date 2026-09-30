@@ -647,18 +647,19 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
    绑定在 .masthead 与 #profile 内随页滚动；锚点段落负责 position:relative + isolation。 */
 .page { isolation: auto; }
 .relief-l, .relief-r {
-  position: absolute; top: 0; height: 120vh; z-index: -1;  /* JS: 实测 span 后覆盖 */ pointer-events: none;
-  width: min(38vw, 560px);
+  position: absolute; top: 0; z-index: -1; pointer-events: none;   /* JS: 底边对齐 #profile 底 */
+  width: min(38vw, 520px);
+  height: auto;                                    /* 盒子尺寸 = 图像尺寸 ⇒ 不被裁 */
   background-repeat: no-repeat;
-  background-size: auto 100%;
+  background-size: 100% 100%;
   opacity: .96;
   filter:
     drop-shadow(-2px -2px 1px rgba(255,255,255,.65))
     drop-shadow(2px 3px 2px rgba(118,102,82,.16))
     drop-shadow(6px 8px 9px rgba(100,85,67,.06));
 }
-.relief-l { left: 0; background-image: url("../img/sakura-ceramic-left.webp"); background-position: left center; }
-.relief-r { right: 0; background-image: url("../img/sakura-ceramic-right.webp"); background-position: right center; }
+.relief-l { left: 0; aspect-ratio: 536 / 1536; background-image: url("../img/sakura-ceramic-left.webp"); background-position: center; }
+.relief-r { right: 0; aspect-ratio: 488 / 1536; background-image: url("../img/sakura-ceramic-right.webp"); background-position: center; }
 @media (max-width: 1100px) {
   .relief-l, .relief-r { width: 30vw; opacity: .8; }
 }
@@ -691,3 +692,6 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   .zone-ivory, .zone-cool, .zone-warm, .foot { background: transparent; }
   .light { opacity: .06; }
 }
+
+/* 07 Beyond / 02 Research 的右侧图版：与 Profile 的 aside 同宽解锁 */
+#beyond .sec-note.aside, #research .sec-note.aside { max-width: none; }
