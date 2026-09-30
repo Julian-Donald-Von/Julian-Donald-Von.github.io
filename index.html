@@ -28,6 +28,7 @@
 <body>
 
 <div class="paper-grid" aria-hidden="true"></div>
+<div class="relief" aria-hidden="true"></div>
 <div class="light" aria-hidden="true"></div>
 <div class="grain" aria-hidden="true"></div>
 
@@ -70,10 +71,12 @@
         </div>
 
         <figure class="plate-figure">
-          <img src="assets/img/char_hero.png" alt="Dongle Feng" width="418" height="1200">
+          <img src="assets/img/char_hero.jpg"
+               srcset="assets/img/char_hero.jpg 1x, assets/img/char_hero@2x.jpg 2x"
+               alt="Illustrated portrait of Dongle Feng" width="540" height="720">
           <figcaption class="cap">
             <b>Plate 01</b> · Author<br>
-            <span>Orthographic views</span>
+            <span>Author portrait</span>
           </figcaption>
         </figure>
       </div>
@@ -89,19 +92,22 @@
         <div class="sec-body">
           <h2 class="sec-title">
             Where engineering meets law
-            <span class="sub">Aerospace · Law</span>
+            <span class="sub">Aerospace · Law · AI</span>
           </h2>
           <p class="prose">
-            I read aircraft power engineering at the School of Astronautics before moving
-            to law school. The turn was not a flight from engineering but a transfer of its
-            habits into legal questions: judicial discretion can be coded, the boundaries of
-            a model's behaviour can be measured, and the premises of a normative argument
-            can be made explicit.
+            I read aircraft power engineering at the School of Astronautics before moving to law school. The turn was not a flight from engineering but a transfer of its habits into legal questions: judicial discretion can be coded, the boundaries of a model’s behaviour can be measured, and the premises of a normative argument can be made explicit.
           </p>
           <p class="prose">
-            I hold both the Chinese Patent Agent qualification and the National Legal
-            Profession qualification, and I work on the translation layer between
-            technical fact and legal element.
+            Since then, most of my work has sat on the same seam: building systems that turn legal material into something computable, and asking what it takes for the results to be usable in a legal argument. That question is harder than it looks. A number that is defensible in engineering can be worthless in law, because the law asks not only whether a result is stable but whether it can be attributed — to a person, to a design decision, to a record. Most of my projects are attempts to make that translation honest.
+          </p>
+          <p class="prose">
+            One line of that work is technical. I build and evaluate models that read music, speech and text, and I care about how they behave when they are small enough to run on ordinary hardware. Building a local AI radio — one that selects, introduces and comments on music in real time, without sending a single byte to a server — turned out to be a demanding test of that. It forced me to answer questions I could previously avoid: which parts of a system actually need a model, which parts merely needed a better interface, and where a delay of two hundred milliseconds stops being a performance issue and becomes a legal one.
+          </p>
+          <p class="prose">
+            The other line is doctrinal and empirical. I work on how private law should treat computational decisions: when a model’s output can be treated as an expression of intent, what a claimant would have to establish to challenge it, and where responsibility should rest when the causal chain runs through a system that no single person fully understands. I test those arguments against real material — hundreds of coded judgments, comparative doctrine, and the actual behaviour of deployed systems.
+          </p>
+          <p class="prose">
+            I hold both the Chinese Patent Agent Qualification and the National Legal Profession Qualification, and I work on the translation layer between technical fact and legal element.
           </p>
 
           <div class="plates">
@@ -126,7 +132,6 @@
         </div>
         <div class="sec-note aside">
           <dl class="kv">
-            <dt>Base</dt><dd>Changchun, CN</dd>
             <dt>Field</dt><dd>Law × Computing</dd>
             <dt>Languages</dt><dd>zh / en</dd>
           </dl>
@@ -423,98 +428,10 @@
       </div>
     </section>
 
-    <!-- ===================== 07 Credentials ===================== -->
-    <section class="sec zone-ivory reveal" id="credentials">
-      <div class="grid">
-        <div class="idx"><span class="n">07</span>Credentials</div>
-        <div class="sec-body">
-          <h2 class="sec-title">
-            Credentials and awards
-            <span class="sub">Professional qualifications · scholarships</span>
-          </h2>
-          <div class="rows">
-            <div class="row">
-              <div class="t">Chinese Patent Agent qualification</div>
-              <div class="d">Held</div>
-            </div>
-            <div class="row">
-              <div class="t">National Legal Profession qualification</div>
-              <div class="d">Held</div>
-            </div>
-            <div class="row">
-              <div class="t">College English Test Band 6 (CET-6)</div>
-              <div class="d tnum">590</div>
-            </div>
-            <div class="row">
-              <div class="t">Jilin University Academic Scholarship</div>
-              <div class="d tnum">2025</div>
-            </div>
-            <div class="row">
-              <div class="t">Beihang University Freshman Scholarship</div>
-              <div class="d tnum">2019</div>
-            </div>
-          </div>
-        </div>
-        <div class="sec-note aside">
-          <p>Patent agent and legal profession: both the technical-fact and the
-            legal-element side are workable ground.</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- ===================== 08 Skills ===================== -->
-    <section class="sec zone-ivory reveal" id="skills">
-      <div class="grid">
-        <div class="idx"><span class="n">08</span>Skills</div>
-        <div class="sec-body">
-          <h2 class="sec-title">
-            Skills
-            <span class="sub">Engineering · law · tooling</span>
-          </h2>
-          <div class="rows">
-            <div class="row">
-              <div class="t">Engineering</div>
-              <div class="d">A</div>
-              <div class="note">
-                Python 3.x · FastAPI · WebSocket · PyTorch · NumPy / SciPy · SQLite ·
-                WebGL2 · JavaScript ES modules · LaTeX
-              </div>
-            </div>
-            <div class="row">
-              <div class="t">Models and audio</div>
-              <div class="d">B</div>
-              <div class="note">
-                CLAP · YAMNet · Beat&nbsp;This! · Ollama / Qwen · VOICEVOX / Piper ·
-                sounddevice / PortAudio · real-time audio pipeline tuning
-              </div>
-            </div>
-            <div class="row">
-              <div class="t">Legal practice</div>
-              <div class="d">C</div>
-              <div class="note">
-                Patent prosecution · civil and commercial statutory interpretation ·
-                judicial statistics · bulk retrieval and structured coding of judgments
-              </div>
-            </div>
-            <div class="row">
-              <div class="t">Other</div>
-              <div class="d">D</div>
-              <div class="note">
-                Markdown · MS Office · Chinese (native) · English (working language, CET-6 590)
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="sec-note aside">
-          <p>Tools follow the problem, not the reverse.</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- ===================== 09 Contact ===================== -->
+    <!-- ===================== 07 Contact ===================== -->
     <section class="sec zone-warm reveal" id="contact">
       <div class="grid">
-        <div class="idx"><span class="n">09</span>Contact</div>
+        <div class="idx"><span class="n">07</span>Contact</div>
         <div class="sec-body">
           <h2 class="sec-title">
             Contact
