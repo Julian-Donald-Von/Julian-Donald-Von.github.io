@@ -22,7 +22,7 @@
 <meta name="twitter:image" content="https://julian-donald-von.github.io/assets/img/og.png">
 
 <link rel="stylesheet" href="assets/fonts/latin.css">
-<link rel="stylesheet" href="assets/css/editorial.css?v20260930v">
+<link rel="stylesheet" href="assets/css/editorial.css?v20260930w">
 <noscript><style>.reveal{opacity:1;transform:none}</style></noscript>
 </head>
 <body>
@@ -366,8 +366,11 @@ var lC = [`Congratulations. Your display has achieved texture.`,`What you are se
         return { typos: 2 + (Math.random() < 0.5 ? 1 : 0),
                  frust: damnUsed ? null : (Math.random() < 0.35 ? "quip" : "damn") };
       }
-      return { typos: 3, frust: swearUsed ? (damnUsed ? null : "damn")           /*  1% ...shit */
-                                         : (Math.random() < 0.3 ? "quip" : "shit") };
+      /* 1% 档里再分出最低概率的 Whatever. 彩蛋（文档：打错→不删→打 Whatever.→一起删掉重来） */
+      var last = Math.random();
+      return { typos: 3, frust: swearUsed ? (damnUsed ? null : "damn")
+                                         : (last < 0.2 ? "whatever"
+                                            : last < 0.5 ? "quip" : "shit") };
     }
 
     /* 节奏：普通 35-65ms；空格后偶停；逗号 80-140；句号 120-220；破折号 120-250 */
@@ -470,7 +473,23 @@ var lC = [`Congratulations. Your display has achieved texture.`,`What you are se
         /* 打错之后不会立刻发现：先继续往下打几个字，才回头删到出错的地方 */
         var ahead = 2 + Math.floor(Math.random() * 4);          /* 继续打 2–5 个字符 */
         var tail = target.substr(tp.at + tp.len, ahead);
-        put(tp.err + tail, function () {
+        var isWhatever = (mood.frust === "whatever" && usedTypos === 1);
+        put(tp.err + tail + (isWhatever ? " Whatever." : ""), function () {
+          if (isWhatever) {
+            /* 发现错了但不删，先甩一句 Whatever.，停一下，再把错字和它一起删掉重来 */
+            later(function () {
+              erase(tp.err.length + tail.length + 10, function () {
+                later(function () {
+                  mood.frust = null;
+                  put(tp.correct + tail, function () {
+                    i = tp.at + tp.len + tail.length;
+                    then();
+                  });
+                }, 300);
+              });
+            }, 700);
+            return;
+          }
           later(function () {
             if (usedTypos >= 2) lineEl.classList.add("caret-flash");
             later(function () {
