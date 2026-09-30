@@ -687,3 +687,4 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 
 /* 07 Beyond / 02 Research 的右侧图版：与 Profile 的 aside 同宽解锁 */
 #beyond .sec-note.aside, #research .sec-note.aside { max-width: none; }
+#beyond .plate-figure, #research .plate-figure { width: 110%; margin-left: -10%; }  /* 略微放大，向列间空隙延展 34px */
