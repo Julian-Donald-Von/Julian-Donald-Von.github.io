@@ -209,6 +209,13 @@
     <div class="grid">
       <span class="stamp">
         <img src="assets/img/avatar_face.png" alt="">
+        <script>
+      (function () {
+        var i = Math.floor(Math.random() * 8) + 1;
+        document.currentScript.previousElementSibling.querySelector('img')
+          .src = 'assets/img/avatar_r' + i + '.png';
+      })();
+    </script>
         <span>Dongle Feng</span>
       </span>
       <div class="colophon2">
