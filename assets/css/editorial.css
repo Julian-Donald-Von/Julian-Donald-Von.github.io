@@ -739,7 +739,24 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   font-size: clamp(2rem, 4vw, 4.5rem); line-height: 1.16;
   max-width: 880px; text-wrap: balance;
 }
-.gate-actions { display: flex; gap: clamp(18px, 3vw, 34px); }
+.gate-actions {
+  display: flex; flex-direction: column; align-items: center;
+  gap: clamp(12px, 1.6vh, 18px);
+}
+.gate-actions .gate-btn {
+  opacity: 0; transform: translateY(5px);
+  transition: opacity .3s var(--ease), transform .3s var(--ease);
+}
+.gate-actions--on #gate-stfu, .gate-actions--both #gate-ok { opacity: 1; transform: none; }
+#gate-line.typing::after {
+  content: ""; display: inline-block; width: .05em; height: .95em;
+  margin-left: .08em; vertical-align: -.12em; background: currentColor;
+  animation: caret-blink 1s steps(1) infinite;
+}
+@keyframes caret-blink { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) {
+  #gate-line.typing::after { animation: none; }
+}
 .gate-btn {
   font-family: var(--font-mono); font-size: 15px; letter-spacing: .14em;
   padding: 10px 28px; background: transparent; color: inherit;
@@ -754,4 +771,23 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 .gate-locked { overflow: hidden; }
 
 @media (prefers-color-scheme: dark) {
+}
+
+/* ★ 门卫上滑时下方曾露出白色 canvas：给 html 显式纸色兜底（canvas 背景），
+   #gate 自身也给一层纸色（::before 的滤镜层之外的兜底）。 */
+html { background: var(--bg); }
+#gate { background: var(--bg); }
+@media (prefers-color-scheme: dark) {
+  html { background: var(--bg); }
+  #gate { background: var(--bg); }
+}
+
+/* ★ 纸面跟随鼠标：位移视差（inset 外扩留出位移余量，不露边） */
+.paper-fiber { inset: -32px; }
+.paper-fiber-a, .paper-fiber-b {
+  transition: transform 420ms cubic-bezier(.22, .61, .36, 1);
+  will-change: transform;
+}
+@media (prefers-reduced-motion: reduce) {
+  .paper-fiber-a, .paper-fiber-b { transition: none; }
 }
