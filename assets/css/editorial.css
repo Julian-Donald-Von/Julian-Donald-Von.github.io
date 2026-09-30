@@ -11,7 +11,7 @@
 
 /* ---------- 1. Tokens ---------- */
 :root {
-  --bg:          #f2f0ea;   /* 暖象牙白，带灰度 */
+  --bg:          #f6f4ee;   /* +4 补偿噪声/分层混合造成的整体压暗 */   /* 暖象牙白，带灰度 */
   --bg-cool:     #edeFEE;   /* 研究区：微冷灰蓝 */
   --bg-warm:     #f1ede6;   /* 实务/联系区：微灰棕 */
   --bg-foot:     #e7e4dd;
@@ -56,7 +56,7 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg:          #1e211f;
+    --bg:          #222523;   /* 同上，深色侧补偿 */
     --bg-cool:     #1d2124;
     --bg-warm:     #21201d;
     --bg-foot:     #191c1a;
@@ -139,12 +139,12 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 
 .grain {
   position: fixed; inset: 0; z-index: 2; pointer-events: none;
-  opacity: .055; mix-blend-mode: multiply;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
-  background-size: 200px 200px;
+  opacity: .45; mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%27280%27%20height%3D%27280%27%3E%3Cfilter%20id%3D%27n%27%3E%3CfeTurbulence%20type%3D%27fractalNoise%27%20baseFrequency%3D%270.42%27%20numOctaves%3D%274%27%20stitchTiles%3D%27stitch%27%2F%3E%3CfeColorMatrix%20type%3D%27saturate%27%20values%3D%270%27%2F%3E%3CfeComponentTransfer%3E%3CfeFuncR%20type%3D%27linear%27%20slope%3D%271%27%20intercept%3D%270.30%27%2F%3E%3CfeFuncG%20type%3D%27linear%27%20slope%3D%271%27%20intercept%3D%270.30%27%2F%3E%3CfeFuncB%20type%3D%27linear%27%20slope%3D%271%27%20intercept%3D%270.30%27%2F%3E%3C%2FfeComponentTransfer%3E%3C%2Ffilter%3E%3Crect%20width%3D%27280%27%20height%3D%27280%27%20filter%3D%27url%28%2523n%29%27%2F%3E%3C%2Fsvg%3E");
+  background-size: 280px 280px;
 }
 @media (prefers-color-scheme: dark) {
-  .grain { opacity: .05; mix-blend-mode: screen; }
+  .grain { opacity: .20; mix-blend-mode: overlay; }
 }
 
 /* 竖向 flex：内容比视口短时（如图版页）把页脚压到底部，
@@ -199,14 +199,27 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 
 .masthead-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) clamp(170px, 20vw, 268px);
-  column-gap: clamp(28px, 5vw, 84px);
-  align-items: end;
+  grid-template-columns: minmax(0, 1fr);   /* 报头不再放肖像，取消右侧图版列 */
   margin-top: 44px;
+}
+.masthead-grid > div { max-width: 780px; }
+
+/* 正文两端对齐：按内容宽度撑满（含自动断词，避免大词距） */
+.prose, .lede, .rows .note, .entries .note {
+  text-align: justify;
+  text-justify: inter-word;
+  -webkit-hyphens: auto;
+  hyphens: auto;
+}
+
+/* 名字右侧的头像贴纸 */
+.namerow { display: flex; flex-wrap: wrap; align-items: center; gap: clamp(14px, 2vw, 28px); }
+.namerow .face {
+  width: clamp(60px, 6.6vw, 92px); height: auto; display: block; flex: none;
+  filter: grayscale(14%) saturate(.94);
 }
 @media (max-width: 780px) {
   .masthead-grid { grid-template-columns: 1fr; }
-  .masthead-grid .plate-figure { max-width: 186px; margin-top: 40px; }
 }
 
 .name {
@@ -237,13 +250,6 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 .lede em { font-style: italic; color: var(--ink-deep); }
 
 /* 图版（作者像）：无卡框，只有图 + 顶部细线 + 说明 */
-.plate-figure img { width: 100%; height: auto; filter: grayscale(14%) saturate(.94); }
-.plate-figure .cap {
-  margin-top: 14px; padding-top: 10px; border-top: 1px solid var(--line);
-  font-family: var(--font-mono); font-size: 11.5px; line-height: 1.6;
-  letter-spacing: .08em; color: var(--ink-2);
-}
-.plate-figure .cap b { font-weight: 400; color: var(--ink-deep); }
 
 /* 链接清单 */
 .linklist {
@@ -404,6 +410,9 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 
 /* ---------- 10. 三视图图版 ---------- */
 .plates { max-width: var(--col); }
+/* 01 Profile 里的大立绘：按自然比例，宽度收窄，不占满整栏 */
+.plate-portrait { max-width: 300px; margin-bottom: clamp(26px, 3.6vw, 46px); }
+.plate-portrait img { height: auto; object-position: center; }
 .plate-strip {
   display: grid; grid-template-columns: repeat(3, 1fr);
   gap: clamp(12px, 2.2vw, 30px);
