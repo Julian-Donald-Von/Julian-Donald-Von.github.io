@@ -217,7 +217,6 @@ var lC = [`Congratulations. Your display has achieved texture.`,`What you are se
     var swearing = false;
     function later(fn, ms) { var t = window.setTimeout(function () { if (!aborted) fn(); }, ms); timers.push(t); return t; }
     function clearAll() { for (var i = 0; i < timers.length; i++) window.clearTimeout(timers[i]); timers.length = 0; }
-    function ss(k, v) { try { if (v === undefined) return sessionStorage.getItem(k); sessionStorage.setItem(k, v); } catch (e) { return null; } }
 
     /* 键盘相邻键 */
     var KB = ["qwertyuiop", "asdfghjkl", "zxcvbnm"];
@@ -268,18 +267,8 @@ var lC = [`Congratulations. Your display has achieved texture.`,`What you are se
                  "apparently not.", "one more time.", "let’s pretend that didn’t happen.",
                  "you saw nothing."];
     function pickBurst() {
-      var swearOk = ss("gate.swear") !== "1";
-      var damnOk = ss("gate.damn") !== "1";
-      var pool = BURST.filter(function (p) {
-        if (p === "…shit") return swearOk;      /* 粗口一个 session 各最多一次 */
-        if (p === "…damn") return damnOk;
-        return true;
-      });
-      if (!pool.length) pool = BURST.slice(3);
-      var phrase = pool[Math.floor(Math.random() * pool.length)];
-      if (phrase === "…damn") ss("gate.damn", "1");
-      if (phrase === "…shit") ss("gate.swear", "1");
-      return phrase;
+      // Every load gets a fresh chance, regardless of earlier browser visits.
+      return BURST[Math.floor(Math.random() * BURST.length)];
     }
 
     function rollMood() {
@@ -287,8 +276,8 @@ var lC = [`Congratulations. Your display has achieved texture.`,`What you are se
       if (r < 0.70) return { typos: 0, frust: null };
       if (r < 0.90) return { typos: 1, frust: null };
       if (r < 0.97) return { typos: 2 + (Math.random() < 0.5 ? 1 : 0), frust: null };
-      if (r < 0.99) return { typos: 2, frust: ss("gate.damn") !== "1" ? "damn" : "burst" };
-      if (r < 0.998) return { typos: 3, frust: ss("gate.swear") !== "1" ? "giveup" : "burst" };
+      if (r < 0.99) return { typos: 2, frust: "damn" };
+      if (r < 0.998) return { typos: 3, frust: "giveup" };
       if (r < 0.999) return { typos: 2, frust: "whatever" };
       return { typos: 2, frust: "burst" };
     }
@@ -367,8 +356,6 @@ var lC = [`Congratulations. Your display has achieved texture.`,`What you are se
         frustDone = true;
         var kind = mood.frust;
         var phrase = kind === "damn" ? "...damn" : kind === "giveup" ? "...shit" : pickBurst();
-        if (kind === "damn") ss("gate.damn", "1");
-        if (kind === "giveup") ss("gate.swear", "1");
         swearing = /^(?:…|\.\.\.)(?:damn|shit)$/.test(phrase);
         if (lineEl.replaceAt) lineEl.replaceAt(i, i, phrase.length);
         put(phrase, function () {
@@ -1183,6 +1170,7 @@ var lC = [`Congratulations. Your display has achieved texture.`,`What you are se
         </script>
 </body>
 </html>
+
 
 
 

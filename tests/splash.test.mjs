@@ -76,7 +76,7 @@ test('Whatever and non-swear frustration variants are reachable and erased', () 
   assert(whatever.history.some(s=>s.endsWith(' Whatever.')));
   assert.equal(whatever.ids['gate-line'].textContent,text);
   const burst=harness({roll:0.9995,session:new Map([['gate.damn','1'],['gate.swear','1']])});
-  burst.api.typeNow(text,false); burst.drain();
+  burst.api.typeNow(text,false); burst.random(0.5); burst.drain();
   assert(burst.history.some(s=>['nope.','again?','close enough—','I can type.','apparently not.','one more time.','let’s pretend that didn’t happen.','you saw nothing.'].some(p=>s.endsWith(p))));
   assert.equal(burst.ids['gate-line'].textContent,text);
 });
@@ -104,16 +104,19 @@ test('natural typo kinds change a word and protected words never receive typos',
   assert.equal(p.ids['gate-line'].textContent, 'JavaScript NeuroAI Reviewer PDF AI CV STFU.');
 });
 
-test('session limits prevent repeat damn and shit on later loads', () => {
-  const session = new Map();
-  for (const roll of [0.98,0.995,0.98,0.995]) {
+test('damn and shit can trigger repeatedly in the same browser, even with old session flags', () => {
+  const session = new Map([['gate.damn','1'], ['gate.swear','1']]);
+  for (const roll of [0.98,0.995,0.98,0.995,0.98,0.995]) {
     const h = harness({roll,session}); h.api.typeNow(text,false); h.drain();
     const phrase = roll === 0.98 ? '...damn' : '...shit';
-    if (session.size === 2 && roll === 0.98) assert(!h.history.some(s => s.endsWith(phrase)));
+    assert(h.history.some(s => s.endsWith(phrase)), 'repeat ' + phrase + ' must be reachable');
+    assert.equal(h.ids['gate-line'].textContent,text);
   }
-  assert.equal(session.get('gate.damn'),'1'); assert.equal(session.get('gate.swear'),'1');
-  const h = harness({session}); h.random(0);
-  assert(!['…damn','…shit'].includes(h.api.pickBurst()));
+  assert.deepEqual([...session], [['gate.damn','1'],['gate.swear','1']], 'no session flag writes');
+  const h=harness({session});h.random(0);assert.equal(h.api.pickBurst(),'…damn');
+  h.random(0.15);assert.equal(h.api.pickBurst(),'…shit');
+  const blocked=harness({roll:0.995,blocked:true});blocked.api.typeNow(text,false);blocked.drain();
+  assert(blocked.history.some(s=>s.endsWith('...shit')));
 });
 
 test('okay and STFU cancel typing and delayed font readiness cannot restart it', () => {
@@ -180,3 +183,4 @@ test('screen readers receive the correct full line; Tab stays in dialog and Esca
   assert.equal(h.doc.activeElement,h.ids['gate-stfu']);
   h.ids.gate.fire('keydown',{key:'Escape',preventDefault(){}}); h.drain(); assert(h.ids.gate.removed);
 });
+
