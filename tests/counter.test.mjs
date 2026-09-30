@@ -53,8 +53,8 @@ test('frontend counter never blocks exit, never fabricates totals and ignores st
   assert.equal(calls[1].options.keepalive,true);
   pending[1](Response.json({count:10})); await new Promise(resolve=>setImmediate(resolve));
   pending[0](Response.json({count:9})); await new Promise(resolve=>setImmediate(resolve));
-  assert.equal(el.textContent,'10 unique IPs told me to STFU'); assert.equal(timers.size,0);
-  for(const base of ['', 'http://counter.example', 'https://secret@counter.example']) {
+  assert.equal(el.textContent,'10 unique IPs told me to STFU. Very constructive.'); assert.equal(timers.size,0);
+  for(const base of ['http://counter.example', 'https://secret@counter.example']) {
     const w={STFU_COUNTER_URL:base}; let fetched=false;
     vm.runInNewContext(source,{...context,window:w,fetch(){fetched=true;}}); assert.equal(fetched,false);
   }
@@ -62,5 +62,25 @@ test('frontend counter never blocks exit, never fabricates totals and ignores st
   bad.window={STFU_COUNTER_URL:'https://counter.example'};
   el.textContent='STFU consensus: unavailable'; bad.fetch=async()=>Response.json({count:-1});
   vm.runInNewContext(source,bad); await new Promise(resolve=>setImmediate(resolve));
-  assert.equal(el.textContent,'STFU consensus: unavailable');
+  assert.equal(el.textContent,'The STFU tally is taking a vow of silence.');
 });
+
+test('browser-local clicks persist, never make network requests, and remain honest when storage is blocked',()=>{
+  const source=readFileSync(new URL('../assets/js/stfu-counter.js',import.meta.url),'utf8');
+  const storage=new Map();
+  function load(blocked=false) {
+    const el={textContent:''}, listeners={};
+    const window={STFU_COUNTER_URL:'',addEventListener(k,fn){listeners[k]=fn;}};
+    vm.runInNewContext(source,{window,document:{getElementById(){return el;}},
+      localStorage:{getItem(k){if(blocked)throw Error();return storage.get(k);},setItem(k,v){if(blocked)throw Error();storage.set(k,v);}},
+      fetch(){throw Error('Local mode must never fetch');}});
+    return {el,window,listeners};
+  }
+  let h=load();assert.match(h.el.textContent,/0 STFU clicks.*this browser/);
+  h.window.recordStfu();h.window.recordStfu();assert.match(h.el.textContent,/1 STFU click.*Very constructive/);
+  h=load();assert.match(h.el.textContent,/1 STFU click/);h.window.recordStfu();assert.match(h.el.textContent,/2 STFU clicks.*Reviewer 2/);
+  storage.clear();h.listeners.storage({key:null});assert.match(h.el.textContent,/0 STFU clicks/);
+  const blocked=load(true);blocked.window.recordStfu();assert.match(blocked.el.textContent,/1 STFU click.*this page/);
+  storage.set('stfu.local-clicks.v1','NaN');assert.match(load().el.textContent,/0 STFU clicks/);
+});
+

@@ -22,13 +22,21 @@
 <meta name="twitter:image" content="https://julian-donald-von.github.io/assets/img/og.png">
 
 <link rel="stylesheet" href="assets/fonts/latin.css">
-<link rel="stylesheet" href="assets/css/editorial.css?v20260930palette1">
+<link rel="stylesheet" href="assets/css/editorial.css?v20260930stable2">
 <noscript><style>.reveal{opacity:1;transform:none}</style></noscript>
 </head>
 <body>
 
 <svg width="0" height="0" aria-hidden="true" style="position:absolute">
   <defs>
+    <filter id="relief-tone" color-interpolation-filters="sRGB">
+      <feColorMatrix type="saturate" values="0"/>
+      <feComponentTransfer>
+        <feFuncR id="relief-tone-r" type="linear" slope="1" intercept="0"/>
+        <feFuncG id="relief-tone-g" type="linear" slope="1" intercept="0"/>
+        <feFuncB id="relief-tone-b" type="linear" slope="1" intercept="0"/>
+      </feComponentTransfer>
+    </filter>
     <filter id="paper-fiber-a" x="-5%" y="-5%" width="110%" height="110%" color-interpolation-filters="sRGB">
       <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="5" seed="7" result="n"/>
       <feDiffuseLighting in="n" surfaceScale="2" diffuseConstant="1" lighting-color="#ffffff" result="l">
@@ -115,7 +123,7 @@
 <div class="paper-fiber paper-fiber-a" aria-hidden="true"></div>
 <div class="paper-fiber paper-fiber-b" aria-hidden="true"></div>
 
-<div id="stfu-count" class="stfu-counter" title="Repeated clicks from the same IP count once. IP addresses do not identify individual people.">STFU consensus: unavailable</div>
+<div id="stfu-count" class="stfu-counter" title="Clicks stored only in this browser. Not a global total or an IP count.">0 STFU clicks · this browser. Suspiciously polite.</div>
 <div id="gate" role="dialog" aria-label="Entrance" aria-modal="true" aria-describedby="gate-sr">
   <p id="gate-line" aria-hidden="true"></p>
   <p id="gate-sr" class="sr-only"></p>
@@ -125,15 +133,17 @@
   </div>
 </div>
 <noscript><style>#gate{display:none}</style></noscript>
-<script src="assets/js/paper-palette.js"></script>
-<script src="assets/js/stfu-config.js"></script>
-<script src="assets/js/stfu-counter.js"></script>
+<script src="assets/js/gate-layout.js"></script>
+<script src="assets/js/paper-palette.js?v20260930stable2"></script>
+<script src="assets/js/stfu-config.js?v20260930stable2"></script>
+<script src="assets/js/stfu-counter.js?v20260930stable2"></script>
 <script>
   /* ---- 嘴欠门卫：随机开场白 + okay/STFU（同功能）+ 上滑退场 ---- */
   (function () {
     var gate = document.getElementById("gate");
     if (!gate) return;
-    var lineEl = document.getElementById("gate-line");
+    var lineNode = document.getElementById("gate-line");
+    var lineEl = lineNode;
 var gOpener = [`The website was perfectly fine before you arrived.`,`Welcome. Please pretend this is a normal academic website.`,`You clicked the link. We both have to live with that now.`,`Please lower your expectations. They load faster.`,`Everything below was technically optional.`,`Welcome. There was a perfectly normal way to do this. We did not choose it.`,`This website has prepared a small ceremony for your arrival. Please pretend it matters.`,`A brief pause for absolutely no operational reason.`,`Serious work ahead. Silly door first.`,`Academic content begins after one small act of nonsense.`,`Nothing is loading. I just wanted your attention.`,`Consider this the loading screen for a page that has already loaded.`,`The website is already ready. This is purely theatrical.`,`A completely unnecessary curtain has been installed for dramatic effect.`,`You are currently being delayed by design.`,`The page is ready. I’m the one delaying you now.`,`This could have been a direct link. Then someone discovered transitions.`,`We could skip this screen, but then what would be the point of knowing CSS?`,`This message is optional. Unfortunately, so was the animation.`,`No feature request asked for this.`];
 var gButtons = [`Press “okay” if you’re curious. Press “STFU” if you’re also curious, but with boundaries.`,`Both buttons work. One of them is simply more emotionally honest.`,`You have two buttons and absolutely no meaningful decision to make. Enjoy.`,`This interface respects your agency by giving you two buttons that do the same thing.`,`Choose wisely. Nothing will change either way.`,`Your choice will be ignored with great professionalism.`,`Please select how you would like to dismiss me.`,`There is no correct answer. There is, however, a funnier one.`,`One button is polite. The other is concise.`,`Choose the response that best represents your relationship with unnecessary UI.`,`If you press STFU, I will take the feedback with the dignity of a div element.`,`This conversation can end whenever you want. Conveniently, both buttons agree.`,`I have said enough. The right-hand button agrees.`,`At this point, pressing STFU would be procedurally justified.`,`No hard feelings. Mostly because I am CSS.`];
 var gAcademic = [`Preliminary results suggest you are still here.`,`Observation complete. Participant has located the buttons.`,`Interaction detected. Statistical significance pending.`,`This experiment has no hypothesis, no control group, and excellent typography.`,`Baseline condition: a normal website. Not implemented.`,`Methodological note: both buttons produce suspiciously similar outcomes.`,`Results may vary. They probably won’t.`,`This screen has excellent internal validity and no external purpose.`,`The website contains research. The website itself has not been peer reviewed.`,`This homepage has passed internal review by the homepage.`,`External validation remains inconvenient.`,`Ablation study pending: does removing this screen improve anything? We refuse to find out.`];
@@ -312,6 +322,8 @@ var lC = [`Congratulations. Your display has achieved texture.`,`What you are se
       if (!lineEl || aborted) return;
       reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       var target = line;
+      if (lineEl.destroy) lineEl.destroy();
+      lineEl = window.createGateLayout ? window.createGateLayout(lineNode, target) : lineNode;
       var restarted = false;
       showButtons(true);
       if (reduce) { lineEl.textContent = target; showButtons(true); return; }
@@ -358,10 +370,12 @@ var lC = [`Congratulations. Your display has achieved texture.`,`What you are se
         if (kind === "damn") ss("gate.damn", "1");
         if (kind === "giveup") ss("gate.swear", "1");
         swearing = /^(?:…|\.\.\.)(?:damn|shit)$/.test(phrase);
+        if (lineEl.replaceAt) lineEl.replaceAt(i, i, phrase.length);
         put(phrase, function () {
           later(function () {
             erase(phrase.length, function () {
               swearing = false;
+              if (lineEl.clearReplacement) lineEl.clearReplacement();
               later(function () {
                 if (kind === "giveup") {               /* 摆烂：放弃手打，剩下的直接贴上去 */
                   lineEl.textContent = "";
@@ -378,6 +392,7 @@ var lC = [`Congratulations. Your display has achieved texture.`,`What you are se
         var tp = makeTypo(target, spot);
         if (!tp) { then(); return; }
         usedTypos++;
+        if (lineEl.replaceAt) lineEl.replaceAt(tp.at, tp.at + tp.len, tp.err.length - tp.len);
         /* 打错之后不会立刻发现：先继续往下打几个字，才回头删到出错的地方 */
         var ahead = 2 + Math.floor(Math.random() * 4);          /* 继续打 2–5 个字符 */
         var tail = target.substr(tp.at + tp.len, ahead);
@@ -389,6 +404,7 @@ var lC = [`Congratulations. Your display has achieved texture.`,`What you are se
               erase(tp.err.length + tail.length + 10, function () {
                 later(function () {
                   mood.frust = null;
+                  if (lineEl.clearReplacement) lineEl.clearReplacement();
                   put(tp.correct + tail, function () {
                     i = tp.at + tp.len + tail.length;
                     then();
@@ -405,6 +421,7 @@ var lC = [`Congratulations. Your display has achieved texture.`,`What you are se
               erase(tp.err.length + tail.length, function () {    /* 只删到出错处，前面的字不动 */
                 later(function () {
                   if (usedTypos < mood.typos) { runTypo(spot, then); return; }
+                  if (lineEl.clearReplacement) lineEl.clearReplacement();
                   slowUntil = tp.at + tp.len + tail.length + 8;
                   put(tp.correct + tail, function () {
                     i = tp.at + tp.len + tail.length;
@@ -444,6 +461,7 @@ var lC = [`Congratulations. Your display has achieved texture.`,`What you are se
       gate.classList.add("gate--open");
       document.documentElement.classList.remove("gate-locked");
       unlockBackground();
+      if (lineEl.destroy) lineEl.destroy();
       var destination = document.querySelector("main a, header a, nav a");
       if (destination) destination.focus({ preventScroll: true });
       window.setTimeout(function () { if (gate.parentNode) gate.parentNode.removeChild(gate); }, reduce ? 60 : 900);
@@ -497,6 +515,11 @@ var lC = [`Congratulations. Your display has achieved texture.`,`What you are se
       try { localStorage.setItem(EXITCUR, JSON.stringify(st)); } catch (e) {}
       return EXIT_TIERS[gi].lines[idx];
     }
+    function showExitReply(reply) {
+      if (lineEl.destroy) lineEl.destroy();
+      lineEl = lineNode;
+      lineEl.textContent = reply;
+    }
     function dismiss(fromStfu) {
       if (aborted) return;
       var wasSwearing = swearing;
@@ -507,12 +530,12 @@ var lC = [`Congratulations. Your display has achieved texture.`,`What you are se
         if (window.recordStfu) window.recordStfu();
         if (wasSwearing) { window.setTimeout(slideAway, 100); return; }   /* 正在骂：不回嘴，直接走 */
         if (Math.random() < 0.20) { slideAway(); return; }
-        if (lineEl) lineEl.textContent = pickExit();
+        if (lineEl) showExitReply(pickExit());
         window.setTimeout(slideAway, 150);
         return;
       }
       if (Math.random() < 0.05) {                                      /* okay 偶尔也回一句 */
-        if (lineEl) lineEl.textContent = Math.random() < 0.5 ? "bold." : "sure.";
+        if (lineEl) showExitReply(Math.random() < 0.5 ? "bold." : "sure.");
         window.setTimeout(slideAway, 150);
         return;
       }
@@ -1148,4 +1171,5 @@ var lC = [`Congratulations. Your display has achieved texture.`,`What you are se
         </script>
 </body>
 </html>
+
 

@@ -24,7 +24,7 @@ For lines with an eligible English word of at least five letters: 70% normal; 20
 
 Headless Microsoft Edge also exercised normal, damn, shit, Whatever, mobile repeated-error, and reduced-motion paths using fake time and deterministic randomness supplied by the test environment. Final text, event visibility, no page errors, button visibility, viewport fit, and dismissal passed in all six scenarios. Light and dark desktop screenshots and a 375px mobile screenshot were visually inspected. Production has no forced-event query parameters or debug hooks.
 
-The counter service was tested with a simulated D1 binding; it has not been deployed or verified against a live Cloudflare account. See [deployment instructions](../counter/README.md). Until an endpoint is configured, the page displays an unavailable status and never invents a total.
+The optional counter service was tested with a simulated D1 binding; it has not been deployed or verified against a live Cloudflare account. See [deployment instructions](../counter/README.md). The later service-free change below uses explicitly labeled browser-local clicks until an endpoint is configured.
 
 ## Paper palette and scrolling follow-up
 
@@ -33,3 +33,14 @@ The top masthead rule now holds five accessible color buttons: original, sage, m
 Paper fibers now use seamless 512px SVG tiles in document-positioned layers. The texture scrolls with page content and the existing sakura relief, with no mouse parallax or scroll-event animation. Existing light/dark fiber lighting, two-seed crossfade, print suppression and reduced-motion treatment are preserved. Tiling avoids filtering one enormous document-sized bitmap. The background color also applies to the entrance curtain.
 
 Browser verification passed for all five colors in both light and dark modes at 1280px and 375px, including persistence, adapting the same selection to a system theme change, no horizontal overflow, and paper movement matching a 450px document scroll. Screenshots were visually inspected. All 15 existing automated tests and six splash browser scenarios still pass.
+
+## Service-free count, relief tint and stable lines
+
+STFU now counts browser-local clicks by default. The visible label states `this browser` (or `this page` when storage is blocked), never unique IPs. Counts persist on refresh and copy rotates through playful remarks. No server, IP lookup or network request is needed. A configured Worker remains an optional separate mode.
+
+The embossed relief uses a neutral-color filter whose base surface maps to the selected paper RGB, in all five palettes and both system themes. Highlights, shadows and alpha retain the embossed shape.
+
+The entrance sentence is measured after fonts are ready. Breaks favor punctuation and fit approximately two-thirds of the viewport width; each visual row is reserved before typing starts. Original string offsets, typo replacement lengths and temporary insertion lengths determine which row receives text. Line planning never inserts or deletes text. Typos and backspaces cannot change the planned row count or position. Resizing deliberately replans for the new viewport. Accessible text remains the exact original sentence and reduced-motion mode is static.
+
+Validation: 19 automated tests pass. Six browser splash scenarios and four palette scenarios pass. Six additional desktop/mobile scenarios verify unchanged row positions throughout damn/shit/Whatever playback, all 107 sentences fitting their line plans without altering characters, local count persistence across refresh, and relief base color matching each of the ten palette/theme combinations. Screenshots were visually inspected.
+
