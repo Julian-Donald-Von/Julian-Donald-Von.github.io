@@ -209,6 +209,18 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 }
 .masthead-grid > div { max-width: none; }
 
+/* 顶部 section 目录：极轻，mono 字体，不做传统 navbar */
+.index-row {
+  margin-top: 30px; padding-top: 15px; border-top: 1px solid var(--line-soft);
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: 5px 20px;
+  font-family: var(--font-mono); font-size: 11.5px; line-height: 1.5;
+  letter-spacing: .07em; color: var(--ink-2);
+}
+.index-row a { color: var(--ink-2); border-bottom: 1px solid transparent;
+               transition: color .24s var(--ease), border-color .24s var(--ease); }
+.index-row a:hover { color: var(--ink-deep); border-bottom-color: var(--line-strong); }
+.index-row .n { color: var(--ink-3); margin-right: 7px; font-variant-numeric: tabular-nums; }
+
 /* 报头图版（立绘）：回到右列，且比原来报头里的 186px 明显放大 */
 .plate-figure img { width: 100%; height: auto; filter: grayscale(14%) saturate(.94); }
 .plate-figure .cap {
