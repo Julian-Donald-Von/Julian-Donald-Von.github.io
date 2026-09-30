@@ -78,7 +78,8 @@
             <a href="#work"><span class="n">04</span>Selected work</a>
             <a href="#practice"><span class="n">05</span>Practice</a>
             <a href="#education"><span class="n">06</span>Education</a>
-            <a href="#contact"><span class="n">07</span>Contact</a>
+            <a href="#beyond"><span class="n">07</span>Beyond research</a>
+            <a href="#contact"><span class="n">08</span>Contact</a>
           </nav>
         </div>
 
@@ -123,26 +124,6 @@
           <p class="prose">
             I hold both the Chinese Patent Agent Qualification and the National Legal Profession Qualification, and I work on the translation layer between technical fact and legal element.
           </p>
-
-          <div class="plates">
-            <div class="plate-strip">
-              <figure class="plate">
-                <img src="assets/img/char_front.png" alt="Front view" width="228" height="729">
-                <figcaption><span>Front</span><span class="tnum">01</span></figcaption>
-              </figure>
-              <figure class="plate">
-                <img src="assets/img/char_side.png" alt="Side view" width="214" height="729">
-                <figcaption><span>Side</span><span class="tnum">02</span></figcaption>
-              </figure>
-              <figure class="plate">
-                <img src="assets/img/char_back.png" alt="Back view" width="222" height="722">
-                <figcaption><span>Back</span><span class="tnum">03</span></figcaption>
-              </figure>
-            </div>
-            <div class="scalebar">
-              <span>0</span><span class="bar" aria-hidden="true"></span><span>1 : 1</span>
-            </div>
-          </div>
         </div>
         <div class="sec-note aside">
           <figure class="plate-figure">
@@ -207,6 +188,14 @@
           </div>
         </div>
         <div class="sec-note aside">
+          <figure class="plate-figure">
+            <img src="assets/img/plate_law.jpg"
+                 alt="Parody of the Vitruvian Man holding a lute, scale bar omitted" width="688" height="688">
+            <figcaption class="cap">
+              <b>Plate 03</b> · After Vitruvius<br>
+              <span>Scale bar pending.</span>
+            </figcaption>
+          </figure>
           <p>One method runs through all four: make the object measurable first.</p>
         </div>
       </div>
@@ -451,10 +440,86 @@
       </div>
     </section>
 
-    <!-- ===================== 07 Contact ===================== -->
+
+    <!-- ===================== 07 Beyond research ===================== -->
+    <section class="sec zone-cool reveal" id="beyond">
+      <div class="grid">
+        <div class="idx"><span class="n">07</span>Beyond</div>
+        <div class="sec-body">
+          <h2 class="sec-title">
+            Beyond research, allegedly.
+            <span class="sub">The non-peer-reviewed record</span>
+          </h2>
+          <p class="prose">
+            Everything above this line is written the way academia expects it to be written: measured, cited, hedged in the passive voice.
+          </p>
+          <p class="prose">
+            This section is not. It records the parts of the practice that do not survive peer review: doctored museum reproductions, instruments built out of proportion to their questions, and annotations that would get a footnote rejected on sight.
+          </p>
+          <p class="prose">
+            If any of this reads as unserious, that is a misreading. The serious question underneath is the same one the rest of this page asks, asked badly on purpose: what exactly did you make, how do you know it works, and would you sign your name to the measurement.
+          </p>
+          <p class="prose">
+            Everything below returns to the sober register.
+          </p>
+          <div class="rows">
+            <div class="row">
+              <div class="t">Selected non-peer-reviewed activities</div>
+              <div class="note">
+                Doctored museum reproductions with deliberately falsified provenance; period-inaccurate instrument repairs that nonetheless play in tune; marginalia in library books that were asking for it.
+              </div>
+            </div>
+            <div class="row">
+              <div class="t">Known failure modes</div>
+              <div class="note">
+                Explaining a joke’s provenance until it stops being funny; citing oneself in dinner conversation; treating a 3D printer calibration curve as a research output.
+              </div>
+            </div>
+            <div class="row">
+              <div class="t">Current research question</div>
+              <div class="note">
+                Whether the 3D printer can reproduce the lute before the lute’s designer notices the missing scale bar, and what error bars apply to a smile.
+              </div>
+            </div>
+          </div>
+
+          <div class="plates">
+            <div class="plate-strip">
+              <figure class="plate">
+                <img src="assets/img/char_front.png" alt="Front view" width="228" height="729">
+                <figcaption><span>Front</span><span class="tnum">01</span></figcaption>
+              </figure>
+              <figure class="plate">
+                <img src="assets/img/char_side.png" alt="Side view" width="214" height="729">
+                <figcaption><span>Side</span><span class="tnum">02</span></figcaption>
+              </figure>
+              <figure class="plate">
+                <img src="assets/img/char_back.png" alt="Back view" width="222" height="722">
+                <figcaption><span>Back</span><span class="tnum">03</span></figcaption>
+              </figure>
+            </div>
+            <div class="scalebar">
+              <span>0</span><span class="bar" aria-hidden="true"></span><span>1 : 1</span>
+            </div>
+          </div>
+        </div>
+        <div class="sec-note aside">
+          <figure class="plate-figure">
+            <img src="assets/img/plate_mona.jpg"
+                 alt="Doctored reproduction of the Mona Lisa with an enlarged smile" width="688" height="860">
+            <figcaption class="cap">
+              <b>Plate 02</b> · After Leonardo<br>
+              <span>Unauthorized reprint; smile enlarged.</span>
+            </figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== -- 08 Contact ===================== -->
     <section class="sec zone-warm reveal" id="contact">
       <div class="grid">
-        <div class="idx"><span class="n">07</span>Contact</div>
+        <div class="idx"><span class="n">08</span>Contact</div>
         <div class="sec-body">
           <h2 class="sec-title">
             Contact
@@ -514,13 +579,9 @@
             if (!page) return;
             var els = document.querySelectorAll('.relief-l, .relief-r');
             function layout() {
-              var top = mast.offsetTop;
-              var h = prof.offsetTop + prof.offsetHeight - top;
-              if (h > 0) {
-                for (var i = 0; i < els.length; i++) {
-                  els[i].style.top = top + 'px';
-                  els[i].style.height = h + 'px';
-                }
+              var bottom = prof.offsetTop + prof.offsetHeight;
+              for (var i = 0; i < els.length; i++) {
+                els[i].style.top = (bottom - els[i].offsetHeight) + 'px';
               }
             }
             layout();
