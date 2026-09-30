@@ -22,64 +22,92 @@
 <meta name="twitter:image" content="https://julian-donald-von.github.io/assets/img/og.png">
 
 <link rel="stylesheet" href="assets/fonts/latin.css">
-<link rel="stylesheet" href="assets/css/editorial.css?v20260930o">
+<link rel="stylesheet" href="assets/css/editorial.css?v20260930p">
 <noscript><style>.reveal{opacity:1;transform:none}</style></noscript>
 </head>
 <body>
 
 <svg width="0" height="0" aria-hidden="true" style="position:absolute">
   <defs>
-    <filter id="paper-fiber-a" x="-10%" y="-10%" width="120%" height="120%" color-interpolation-filters="sRGB">
+    <filter id="paper-fiber-a" x="-5%" y="-5%" width="110%" height="110%" color-interpolation-filters="sRGB">
       <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="5" seed="7" result="n"/>
       <feDiffuseLighting in="n" surfaceScale="2" diffuseConstant="1" lighting-color="#ffffff" result="l">
         <feDistantLight azimuth="45" elevation="55"/>
       </feDiffuseLighting>
       <feComponentTransfer in="l" result="ln">
-        <feFuncR type="linear" slope="0.4" intercept="0.688"/>
-        <feFuncG type="linear" slope="0.4" intercept="0.688"/>
-        <feFuncB type="linear" slope="0.4" intercept="0.688"/>
+        <feFuncR type="linear" slope="0.28" intercept="0.757"/>
+        <feFuncG type="linear" slope="0.28" intercept="0.757"/>
+        <feFuncB type="linear" slope="0.28" intercept="0.757"/>
         <feFuncA type="linear" slope="0" intercept="1"/>
       </feComponentTransfer>
-      <feBlend in="SourceGraphic" in2="ln" mode="multiply"/>
+      <feComponentTransfer in="SourceGraphic" result="bg2">
+        <feFuncR type="linear" slope="1.0277" intercept="0"/>
+        <feFuncG type="linear" slope="1.0277" intercept="0"/>
+        <feFuncB type="linear" slope="1.0277" intercept="0"/>
+        <feFuncA type="linear" slope="0" intercept="1"/>
+      </feComponentTransfer>
+      <feBlend in="bg2" in2="ln" mode="multiply" result="lit"/>
+      <feComposite in="lit" in2="SourceAlpha" operator="in"/>
     </filter>
-    <filter id="paper-fiber-b" x="-10%" y="-10%" width="120%" height="120%" color-interpolation-filters="sRGB">
+    <filter id="paper-fiber-b" x="-5%" y="-5%" width="110%" height="110%" color-interpolation-filters="sRGB">
       <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="5" seed="23" result="n"/>
       <feDiffuseLighting in="n" surfaceScale="2" diffuseConstant="1" lighting-color="#ffffff" result="l">
         <feDistantLight azimuth="45" elevation="55"/>
       </feDiffuseLighting>
       <feComponentTransfer in="l" result="ln">
-        <feFuncR type="linear" slope="0.4" intercept="0.688"/>
-        <feFuncG type="linear" slope="0.4" intercept="0.688"/>
-        <feFuncB type="linear" slope="0.4" intercept="0.688"/>
+        <feFuncR type="linear" slope="0.28" intercept="0.757"/>
+        <feFuncG type="linear" slope="0.28" intercept="0.757"/>
+        <feFuncB type="linear" slope="0.28" intercept="0.757"/>
         <feFuncA type="linear" slope="0" intercept="1"/>
       </feComponentTransfer>
-      <feBlend in="SourceGraphic" in2="ln" mode="multiply"/>
+      <feComponentTransfer in="SourceGraphic" result="bg2">
+        <feFuncR type="linear" slope="1.0277" intercept="0"/>
+        <feFuncG type="linear" slope="1.0277" intercept="0"/>
+        <feFuncB type="linear" slope="1.0277" intercept="0"/>
+        <feFuncA type="linear" slope="0" intercept="1"/>
+      </feComponentTransfer>
+      <feBlend in="bg2" in2="ln" mode="multiply" result="lit"/>
+      <feComposite in="lit" in2="SourceAlpha" operator="in"/>
     </filter>
-    <filter id="paper-fiber-a-dark" x="-10%" y="-10%" width="120%" height="120%" color-interpolation-filters="sRGB">
+    <filter id="paper-fiber-a-dark" x="-5%" y="-5%" width="110%" height="110%" color-interpolation-filters="sRGB">
       <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="5" seed="7" result="n"/>
       <feDiffuseLighting in="n" surfaceScale="2" diffuseConstant="1" lighting-color="#ffffff" result="l">
         <feDistantLight azimuth="45" elevation="55"/>
       </feDiffuseLighting>
       <feComponentTransfer in="l" result="ln">
-        <feFuncR type="linear" slope="1.4" intercept="-0.0892"/>
-        <feFuncG type="linear" slope="1.4" intercept="-0.0892"/>
-        <feFuncB type="linear" slope="1.4" intercept="-0.0892"/>
+        <feFuncR type="linear" slope="1.4" intercept="-0.092"/>
+        <feFuncG type="linear" slope="1.4" intercept="-0.092"/>
+        <feFuncB type="linear" slope="1.4" intercept="-0.092"/>
         <feFuncA type="linear" slope="0" intercept="1"/>
       </feComponentTransfer>
-      <feBlend in="SourceGraphic" in2="ln" mode="multiply"/>
+      <feComponentTransfer in="SourceGraphic" result="bg2">
+        <feFuncR type="linear" slope="1.0277" intercept="0"/>
+        <feFuncG type="linear" slope="1.0277" intercept="0"/>
+        <feFuncB type="linear" slope="1.0277" intercept="0"/>
+        <feFuncA type="linear" slope="0" intercept="1"/>
+      </feComponentTransfer>
+      <feBlend in="bg2" in2="ln" mode="multiply" result="lit"/>
+      <feComposite in="lit" in2="SourceAlpha" operator="in"/>
     </filter>
-    <filter id="paper-fiber-b-dark" x="-10%" y="-10%" width="120%" height="120%" color-interpolation-filters="sRGB">
+    <filter id="paper-fiber-b-dark" x="-5%" y="-5%" width="110%" height="110%" color-interpolation-filters="sRGB">
       <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="5" seed="23" result="n"/>
       <feDiffuseLighting in="n" surfaceScale="2" diffuseConstant="1" lighting-color="#ffffff" result="l">
         <feDistantLight azimuth="45" elevation="55"/>
       </feDiffuseLighting>
       <feComponentTransfer in="l" result="ln">
-        <feFuncR type="linear" slope="1.4" intercept="-0.0892"/>
-        <feFuncG type="linear" slope="1.4" intercept="-0.0892"/>
-        <feFuncB type="linear" slope="1.4" intercept="-0.0892"/>
+        <feFuncR type="linear" slope="1.4" intercept="-0.092"/>
+        <feFuncG type="linear" slope="1.4" intercept="-0.092"/>
+        <feFuncB type="linear" slope="1.4" intercept="-0.092"/>
         <feFuncA type="linear" slope="0" intercept="1"/>
       </feComponentTransfer>
-      <feBlend in="SourceGraphic" in2="ln" mode="multiply"/>
+      <feComponentTransfer in="SourceGraphic" result="bg2">
+        <feFuncR type="linear" slope="1.0277" intercept="0"/>
+        <feFuncG type="linear" slope="1.0277" intercept="0"/>
+        <feFuncB type="linear" slope="1.0277" intercept="0"/>
+        <feFuncA type="linear" slope="0" intercept="1"/>
+      </feComponentTransfer>
+      <feBlend in="bg2" in2="ln" mode="multiply" result="lit"/>
+      <feComposite in="lit" in2="SourceAlpha" operator="in"/>
     </filter>
   </defs>
 </svg>
@@ -101,13 +129,13 @@
     var gate = document.getElementById("gate");
     if (!gate) return;
     var lineEl = document.getElementById("gate-line");
-var gOpener = [`The website was perfectly fine before you arrived.`,`Welcome. Please pretend this is a normal academic website.`,`You clicked the link. We both have to live with that now.`,`Please lower your expectations. They load faster.`,`Everything below was technically optional.`,`Welcome. There was a perfectly normal way to do this. We did not choose it.`,`This website has prepared a small ceremony for your arrival. Please pretend it matters.`,`A brief pause for absolutely no operational reason.`,`Serious work ahead. Silly door first.`,`Academic content begins after one small act of nonsense.`,`Nothing is loading. I just wanted your attention.`,`Consider this the loading screen for a page that has already loaded.`,`The website is already ready. This is purely theatrical.`,`A completely unnecessary curtain has been installed for dramatic effect.`,`You are currently being delayed by design.`,`The page is ready. I'm the one delaying you now.`,`This could have been a direct link. Then someone discovered transitions.`,`We could skip this screen, but then what would be the point of knowing CSS?`,`This message is optional. Unfortunately, so was the animation.`,`No feature request asked for this.`];
-var gButtons = [`Press "okay" if you're curious. Press "STFU" if you're also curious, but with boundaries.`,`Both buttons work. One of them is simply more emotionally honest.`,`You have two buttons and absolutely no meaningful decision to make. Enjoy.`,`This interface respects your agency by giving you two buttons that do the same thing.`,`Choose wisely. Nothing will change either way.`,`Your choice will be ignored with great professionalism.`,`Please select how you would like to dismiss me.`,`There is no correct answer. There is, however, a funnier one.`,`One button is polite. The other is concise.`,`Choose the response that best represents your relationship with unnecessary UI.`,`If you press STFU, I will take the feedback with the dignity of a div element.`,`This conversation can end whenever you want. Conveniently, both buttons agree.`,`I have said enough. The right-hand button agrees.`,`At this point, pressing STFU would be procedurally justified.`,`No hard feelings. Mostly because I am CSS.`];
-var gAcademic = [`Preliminary results suggest you are still here.`,`Observation complete. Participant has located the buttons.`,`Interaction detected. Statistical significance pending.`,`This experiment has no hypothesis, no control group, and excellent typography.`,`Baseline condition: a normal website. Not implemented.`,`Methodological note: both buttons produce suspiciously similar outcomes.`,`Results may vary. They probably won't.`,`This screen has excellent internal validity and no external purpose.`,`The website contains research. The website itself has not been peer reviewed.`,`This homepage has passed internal review by the homepage.`,`External validation remains inconvenient.`,`Ablation study pending: does removing this screen improve anything? We refuse to find out.`];
-var gCV = [`This could have been a PDF. Unfortunately, the author knows JavaScript.`,`A CV developed ambitions. This website is the result.`,`Somewhere along the way, a CV acquired stage lighting.`,`Somewhere along the way, a CV developed a personality disorder.`,`This began as a personal website and then received insufficient supervision.`,`Scope creep, but make it welcoming.`,`A tiny interaction was proposed. It has since become infrastructure.`,`This was supposed to be a small detail. We have all heard that before.`,`You are witnessing a minor failure of restraint.`,`This is what happens when "just one little animation" is left unattended.`,`The author would like to clarify that this was all technically optional.`,`Professional information below. Unprofessional entrance above.`,`Formal qualifications below. Informal judgment up here.`,`The following page contains actual work. This screen is here to lower the stakes.`,`The author knows enough JavaScript to be dangerous to otherwise normal webpages.`,`Simplicity was considered. It did not survive peer review.`,`Minimalism was briefly consulted and then ignored.`,`There was probably an easier way to do this.`,`Good enough was available. We chose iteration.`,`Professional on paper. Experimental in production.`];
-var gPersonal = [`Artificial intelligence, natural curiosity, unnecessary splash screen.`,`Somewhere in latent space, this entrance is justified.`,`The model is confident. The interface is less so.`,`No neural networks were required to make this interaction annoying.`,`NeuroAI sounded reasonable until the browser tabs multiplied.`,`Music was once recreational. Then embeddings happened.`,`Cooking was once relaxing. Then reproducibility happened.`,`Warning: the author has been known to apply research methodology to dinner.`,`Recipes may contain undocumented hyperparameters.`,`Control group consumed before analysis.`,`The sauce showed promising early results.`,`Replication may be difficult due to the phrase "a little bit."`,`Some hobbies survived optimization. Others are under review.`,`Aviation remains one of the few interests not currently under hyperparameter tuning.`];
+var gOpener = [`The website was perfectly fine before you arrived.`,`Welcome. Please pretend this is a normal academic website.`,`You clicked the link. We both have to live with that now.`,`Please lower your expectations. They load faster.`,`Everything below was technically optional.`,`Welcome. There was a perfectly normal way to do this. We did not choose it.`,`This website has prepared a small ceremony for your arrival. Please pretend it matters.`,`A brief pause for absolutely no operational reason.`,`Serious work ahead. Silly door first.`,`Academic content begins after one small act of nonsense.`,`Nothing is loading. I just wanted your attention.`,`Consider this the loading screen for a page that has already loaded.`,`The website is already ready. This is purely theatrical.`,`A completely unnecessary curtain has been installed for dramatic effect.`,`You are currently being delayed by design.`,`The page is ready. I’m the one delaying you now.`,`This could have been a direct link. Then someone discovered transitions.`,`We could skip this screen, but then what would be the point of knowing CSS?`,`This message is optional. Unfortunately, so was the animation.`,`No feature request asked for this.`];
+var gButtons = [`Press “okay” if you’re curious. Press “STFU” if you’re also curious, but with boundaries.`,`Both buttons work. One of them is simply more emotionally honest.`,`You have two buttons and absolutely no meaningful decision to make. Enjoy.`,`This interface respects your agency by giving you two buttons that do the same thing.`,`Choose wisely. Nothing will change either way.`,`Your choice will be ignored with great professionalism.`,`Please select how you would like to dismiss me.`,`There is no correct answer. There is, however, a funnier one.`,`One button is polite. The other is concise.`,`Choose the response that best represents your relationship with unnecessary UI.`,`If you press STFU, I will take the feedback with the dignity of a div element.`,`This conversation can end whenever you want. Conveniently, both buttons agree.`,`I have said enough. The right-hand button agrees.`,`At this point, pressing STFU would be procedurally justified.`,`No hard feelings. Mostly because I am CSS.`];
+var gAcademic = [`Preliminary results suggest you are still here.`,`Observation complete. Participant has located the buttons.`,`Interaction detected. Statistical significance pending.`,`This experiment has no hypothesis, no control group, and excellent typography.`,`Baseline condition: a normal website. Not implemented.`,`Methodological note: both buttons produce suspiciously similar outcomes.`,`Results may vary. They probably won’t.`,`This screen has excellent internal validity and no external purpose.`,`The website contains research. The website itself has not been peer reviewed.`,`This homepage has passed internal review by the homepage.`,`External validation remains inconvenient.`,`Ablation study pending: does removing this screen improve anything? We refuse to find out.`];
+var gCV = [`This could have been a PDF. Unfortunately, the author knows JavaScript.`,`A CV developed ambitions. This website is the result.`,`Somewhere along the way, a CV acquired stage lighting.`,`Somewhere along the way, a CV developed a personality disorder.`,`This began as a personal website and then received insufficient supervision.`,`Scope creep, but make it welcoming.`,`A tiny interaction was proposed. It has since become infrastructure.`,`This was supposed to be a small detail. We have all heard that before.`,`You are witnessing a minor failure of restraint.`,`This is what happens when “just one little animation” is left unattended.`,`The author would like to clarify that this was all technically optional.`,`Professional information below. Unprofessional entrance above.`,`Formal qualifications below. Informal judgment up here.`,`The following page contains actual work. This screen is here to lower the stakes.`,`The author knows enough JavaScript to be dangerous to otherwise normal webpages.`,`Simplicity was considered. It did not survive peer review.`,`Minimalism was briefly consulted and then ignored.`,`There was probably an easier way to do this.`,`Good enough was available. We chose iteration.`,`Professional on paper. Experimental in production.`];
+var gPersonal = [`Artificial intelligence, natural curiosity, unnecessary splash screen.`,`Somewhere in latent space, this entrance is justified.`,`The model is confident. The interface is less so.`,`No neural networks were required to make this interaction annoying.`,`NeuroAI sounded reasonable until the browser tabs multiplied.`,`Music was once recreational. Then embeddings happened.`,`Cooking was once relaxing. Then reproducibility happened.`,`Warning: the author has been known to apply research methodology to dinner.`,`Recipes may contain undocumented hyperparameters.`,`Control group consumed before analysis.`,`The sauce showed promising early results.`,`Replication may be difficult due to the phrase “a little bit.”`,`Some hobbies survived optimization. Others are under review.`,`Aviation remains one of the few interests not currently under hyperparameter tuning.`];
 var lA = [`Time to wipe your screen.`,`The site is clean. Your screen, evidently, is not.`,`The background is innocent. Your display has other plans.`,`Those marks are not part of the design.`,`Please do not report your fingerprints as visual bugs.`,`Light mode: now with complimentary fingerprint detection.`,`Congratulations. You have unlocked screen hygiene diagnostics.`,`If you can suddenly see fingerprints, consider this a free diagnostic service.`];
-var lB = [`This page functions as an accidental screen-cleanliness benchmark.`,`Preliminary finding: the display surface may benefit from intervention.`,`Observation: increased luminance correlates with visible screen contamination.`,`Visible artifacts may originate from the observer's hardware.`,`Light mode has identified several previously undocumented fingerprints.`,`Your monitor has been selected for an unrequested surface audit.`,`Any dust revealed by this website is purely observational.`,`The website accepts no responsibility for what increased luminance may disclose.`,`Screen hygiene is outside the scope of this project.`,`Control condition: a cleaner screen.`];
+var lB = [`This page functions as an accidental screen-cleanliness benchmark.`,`Preliminary finding: the display surface may benefit from intervention.`,`Observation: increased luminance correlates with visible screen contamination.`,`Visible artifacts may originate from the observer’s hardware.`,`Light mode has identified several previously undocumented fingerprints.`,`Your monitor has been selected for an unrequested surface audit.`,`Any dust revealed by this website is purely observational.`,`The website accepts no responsibility for what increased luminance may disclose.`,`Screen hygiene is outside the scope of this project.`,`Control condition: a cleaner screen.`];
 var lC = [`Congratulations. Your display has achieved texture.`,`What you are seeing is not grain. It is history.`,`These are not design textures. These are your fingerprints entering the discourse.`,`A website so luminous it doubles as a cleanliness audit.`,`This page may contain traces of your previous lunch.`,`Your screen has provided additional visual content at no extra charge.`,`Light mode has revealed information the website did not request.`,`The Renaissance had chiaroscuro. You have fingerprints.`];
     var GENERAL = [
       { w: 30, lines: gOpener },
@@ -144,7 +172,59 @@ var lC = [`Congratulations. Your display has achieved texture.`,`What you are se
       try { localStorage.setItem(KEY, JSON.stringify(recent)); } catch (e) {}
       return line;
     }
-    if (lineEl) lineEl.textContent = pickLine();
+    /* ---- 打字机出场：3 秒预算；回退不推进预算；3 秒未完先只给 STFU ---- */
+    function typeLine(line) {
+      if (!lineEl) return;
+      var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (reduce) { lineEl.textContent = line; showButtons(true); return; }
+      var budget = 3000, spend = Math.min(2400, budget * 0.8);
+      var per = Math.max(14, Math.min(60, spend / Math.max(line.length, 1)));
+      var text = line, i = 0, typos = 0, done = false;
+      var swear = (Math.random() < 0.5) ? "…damn." : "…shit.";
+      var target = line;
+      lineEl.textContent = "";
+      lineEl.classList.add("typing");
+      window.setTimeout(function () { if (!done) showButtons(false); }, budget);
+      function finish() {
+        done = true;
+        lineEl.classList.remove("typing");
+        showButtons(true);
+      }
+      function key(c) {
+        var idx = "abcdefghijklmnopqrstuvwxyz".indexOf(c.toLowerCase());
+        if (idx < 0) return c;
+        var sib = "abcdefghijklmnopqrstuvwxyz";
+        var pick = sib.charAt(Math.min(25, Math.max(0, idx + (Math.random() < 0.5 ? -1 : 1))));
+        return (c === c.toUpperCase()) ? pick.toUpperCase() : pick;
+      }
+      function step() {
+        if (i >= target.length) {
+          if (typos >= 3 && Math.random() < 0.5) { target = target + " " + swear; }
+          if (i >= target.length) { finish(); return; }
+        }
+        var ch = target.charAt(i);
+        if (/[a-zA-Z]/.test(ch) && Math.random() < 0.035) {
+          typos++;
+          lineEl.textContent += key(ch);
+          window.setTimeout(function () {
+            lineEl.textContent = lineEl.textContent.slice(0, -1);
+            window.setTimeout(function () { lineEl.textContent += ch; i++; step(); }, per);
+          }, 150);
+          return;
+        }
+        lineEl.textContent += ch;
+        i++;
+        window.setTimeout(step, per);
+      }
+      step();
+    }
+    function showButtons(both) {
+      var acts = document.querySelector(".gate-actions");
+      if (!acts) return;
+      acts.classList.add("gate-actions--on");
+      if (both) acts.classList.add("gate-actions--both");
+    }
+    typeLine(pickLine());
     function dismiss() {
       if (gate.classList.contains("gate--open")) return;
       gate.classList.add("gate--open");
@@ -155,6 +235,29 @@ var lC = [`Congratulations. Your display has achieved texture.`,`What you are se
     if (ok) ok.addEventListener("click", dismiss);
     if (stfu) stfu.addEventListener("click", dismiss);
     document.documentElement.classList.add("gate-locked");
+
+    /* ---- 纸面跟随鼠标：位移视差（不改光照 ⇒ 纸色恒定） ---- */
+    (function () {
+      var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (reduce) return;
+      var fibers = document.querySelectorAll(".paper-fiber");
+      var amp = 26;                     /* 最大位移 px */
+      var raf = 0, tx = 0, ty = 0;
+      function apply() {
+        raf = 0;
+        for (var i = 0; i < fibers.length; i++) {
+          var depth = (fibers[i].className.indexOf("paper-fiber-b") > -1) ? 1.6 : 1;
+          fibers[i].style.transform = "translate3d(" + (tx * depth).toFixed(1) + "px," +
+                                      (ty * depth).toFixed(1) + "px,0)";
+        }
+      }
+      function onMove(e) {
+        tx = (e.clientX / window.innerWidth - 0.5) * -2 * amp;
+        ty = (e.clientY / window.innerHeight - 0.5) * -2 * amp;
+        if (!raf) raf = window.requestAnimationFrame(apply);
+      }
+      window.addEventListener("pointermove", onMove, { passive: true });
+    })();
   })();
 </script>
 
