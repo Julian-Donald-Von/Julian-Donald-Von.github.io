@@ -199,13 +199,15 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 
 .masthead-grid {
   display: grid;
-  /* 左：姓名/学历/导语；右：头像方块（立绘在 01 Profile 右栏） */
-  grid-template-columns: minmax(0, 1fr) clamp(150px, 15vw, 212px);
-  column-gap: clamp(26px, 4.6vw, 76px);
+  /* 左：姓名/学历/导语；右：头像方块。
+     ★ 这里必须用与父栅格**同一套参数**（--col + 1fr + --gap），
+       它的第 2 列才会和 01 Profile 的 .sec-note 列**逐像素对齐**。 */
+  grid-template-columns: minmax(0, var(--col)) minmax(0, 1fr);
+  column-gap: var(--gap);
   align-items: start;
   margin-top: 44px;
 }
-.masthead-grid > div { max-width: 720px; }
+.masthead-grid > div { max-width: none; }
 
 /* 报头图版（立绘）：回到右列，且比原来报头里的 186px 明显放大 */
 .plate-figure img { width: 100%; height: auto; filter: grayscale(14%) saturate(.94); }
@@ -215,9 +217,6 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   letter-spacing: .08em; color: var(--ink-2);
 }
 .plate-figure .cap b { font-weight: 400; color: var(--ink-deep); }
-/* 01 Profile：正文栏收窄到 640，把右栏让宽给立绘（否则右栏只有 ~240px，立绘放不大） */
-#profile .grid { grid-template-columns: var(--rail) minmax(0, 640px) minmax(0, 1fr); }
-
 /* 01 Profile 右栏（.sec-note）里的立绘：占满该栏，在 Field/Languages 之上。
    ★ `.aside` 自带 max-width:240px，不解开的话立绘永远只有 240 宽 —— 实测踩过。 */
 #profile .sec-note.aside { max-width: none; }
@@ -234,7 +233,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 /* 右列头像：见方（≥212px，至少等于"姓名 + 两行学历"那一块） */
 .masthead-face { margin: 4px 0 clamp(18px, 2.4vw, 30px); }
 .masthead-face .face {
-  width: min(212px, 100%); height: auto; aspect-ratio: 1 / 1; object-fit: contain;
+  width: 100%; height: auto; aspect-ratio: 1 / 1; object-fit: contain;
   display: block; filter: grayscale(14%) saturate(.94);
 }
 @media (max-width: 780px) {
