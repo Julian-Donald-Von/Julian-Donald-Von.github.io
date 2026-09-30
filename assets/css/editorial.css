@@ -856,3 +856,20 @@ body { position: relative; }
 [data-paper="rose"] { --swatch: var(--paper-rose); }
 [data-paper="sand"] { --swatch: var(--paper-sand); }
 @media print { .paper-picker { display: none; } }
+
+
+/* Tint the neutral relief surface to the exact selected paper color. */
+.relief-l, .relief-r { filter: url(#relief-tone); }
+/* Full sentence is measured once after fonts load. Each row keeps its place
+   while characters, typos and backspaces change only its contents. */
+#gate-line { width: min(1200px, 66.6667vw); max-width: 100%; text-wrap: initial; }
+#gate-line.gate-planned.typing::after { content: none; }
+.gate-row { display: block; min-height: 1.22em; white-space: pre; }
+#gate-line.typing .gate-row-active::after {
+  content: ''; display: inline-block; width: .05em; height: .95em;
+  margin-left: .08em; vertical-align: -.12em; background: currentColor;
+  animation: caret-blink 1s steps(1) infinite;
+}
+#gate-line.caret-flash .gate-row-active::after { animation-duration: .18s; }
+#gate { overflow-y: auto; padding-block: 48px; align-content: safe center; }
+@media (prefers-reduced-motion: reduce) { #gate-line.typing .gate-row-active::after { animation: none; } }

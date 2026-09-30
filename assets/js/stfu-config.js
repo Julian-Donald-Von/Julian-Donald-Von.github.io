@@ -1,3 +1,5 @@
 /* Set to the deployed counter Worker HTTPS origin, with no trailing slash.
-   Leave empty until deployment. Never put a secret or IP lookup service here. */
+   Empty means browser-local click counting, with no service or IP lookup.
+   Never put a secret here. */
 window.STFU_COUNTER_URL = "";
+

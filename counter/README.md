@@ -1,6 +1,8 @@
 # STFU unique-IP counter
 
-The homepage has no working counter endpoint yet. It shows `STFU consensus: unavailable` until `assets/js/stfu-config.js` points to a deployed Worker. It never substitutes a browser-local click count for unique IPs. Dismissal works even when the service fails.
+By default the homepage counts STFU clicks locally, without a service. The label explicitly says `this browser`; the total persists in localStorage and is not a global total or an IP count. Clearing browser data resets it. If storage is unavailable, the label changes to `this page` and the total only lasts for that page. Clicking okay never increments it; repeated events during one dismissal count once. The message rotates through playful responses.
+
+The unique-IP Worker below remains optional. Configure `assets/js/stfu-config.js` only if you deploy it. A configured Worker replaces the local total with the actual server-provided unique-IP count. Network failures never delay dismissal.
 
 ## Deployment
 
@@ -22,4 +24,5 @@ POST `/stfu` reads Cloudflare's edge-provided `CF-Connecting-IP`, stores only a 
 
 ## Tests
 
-From the repository root, run `node --test tests/*.test.mjs`. Tests use fake time and deterministic random values for rare splash paths; production has no debug URL or forced-easter-egg mode. No three-second completion deadline is imposed.
+From the repository root, run `node --test tests/*.test.mjs`. Tests cover local persistence, blocked storage, and optional backend behavior as well as fake time and deterministic random values for rare splash paths. Production has no debug URL or forced-easter-egg mode. No three-second completion deadline is imposed.
+

@@ -12,3 +12,5 @@ Personal homepage of Dongle Feng — Jilin University Law School
 
 GitHub Pages serves this repository directly. `.nojekyll` is intentional. Local dependencies, Worker configuration and secrets are excluded by `.gitignore`. Retired, unreferenced image exports have been removed; earlier versions remain recoverable from Git history.
 
+STFU counts browser-local clicks by default, with no external service; it is explicitly labeled as a local total. A separately deployed Worker can optionally provide a real unique-IP total. Entrance lines are measured once after fonts load and rendered into stable rows, keeping punctuation-aware line breaks separate from typo/backspace text. The neutral sakura relief is tinted to the selected paper color in both system themes.
+
