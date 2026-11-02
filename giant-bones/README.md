@@ -1,5 +1,7 @@
-# 《住在巨人骨头上的人们》公开删节版
+# Those Who Live on a Giant’s Bones / 住在巨人骨头上的人们
 
-从index.html阅读世界设定，从novel/index.html阅读小说。
+Public redacted edition. Read the complete Chinese worldbook at index.html, or the English overview at en/index.html.
 
-本目录只含公开内容。黑条是固定删节标记，被删节的原文不在HTML、搜索数据、地图、注释或下载文件中。小说正文为独立入口。
+小说：novel/index.html · English novel: en/novel/index.html
+
+Only Volume I’s prologue is currently published. The black bars are empty redaction markers; omitted originals are not included in the public files. The full English gazetteers have not been published.
