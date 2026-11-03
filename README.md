@@ -16,3 +16,7 @@ GitHub Pages serves this repository directly. `.nojekyll` is intentional. Local 
 
 STFU counts browser-local clicks by default, with no external service; it is explicitly labeled as a local total. A separately deployed Worker can optionally provide a real unique-IP total. Entrance lines are measured once after fonts load and rendered into stable rows, keeping punctuation-aware line breaks separate from typo/backspace text. The neutral sakura relief is tinted to the selected paper color in both system themes.
 
+
+## Creative content rights
+
+The novel, original worldbuilding expression, maps, cover and illustrations under `giant-bones/` are rights-reserved creative content. No commercial use or republication without the author’s prior written permission. Website code does not grant a licence to this content. See [the content rights notice](giant-bones/en/rights.html) and [LICENSE.md](LICENSE.md). Third-party rights and statutory exceptions remain unaffected.
